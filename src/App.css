@@ -1,0 +1,215 @@
+.text-white {
+  color: white;
+}
+
+.splash-logo {
+  height: 220px;
+}
+
+.login-input {
+  width: 95%;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding-inline: 25px;
+  font-size: 30px;
+  text-align: center;
+  color: white;
+}
+
+.main-button {
+  background-color: #00ABA2;
+  color: white;
+  border-radius: 50px;
+  border: 4px solid #0B4441;
+  border-top: 2px solid #0B4441;
+  padding: 18px;
+  min-width: 70%;
+  padding-inline: 50px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.dashboard-main {
+  min-height: 200px;
+  padding: 15px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 25px;
+}
+
+.leaderboard-dash {
+  min-height: 200px;
+  padding: 15px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 25px;
+}
+
+.leaderboard-self {
+  min-height: 100px;
+  padding: 15px;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 25px;
+}
+.leaderboard-self-profile-item {
+  background: linear-gradient(0.25turn, #05A8A3, #8C4EAC,#532643);
+  border-radius: 25px;
+  padding: 12px;
+}
+
+
+/* .podium-container {
+  position: relative;
+
+  width: 90%;
+  max-width: 400px;
+  height: 500px;
+} */
+
+/* Podium Background */
+.podium-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Winner Styles */
+.winner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.winner-name {
+  color: white;
+  font-weight: bold;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.crown {
+  font-size: 40px;
+  position: absolute;
+  top: -55px;
+  color: gold;
+}
+
+/* Positioning Winners */
+.winner-1 {
+  top: 15%; /* Adjust based on your stage image */
+  left: 52%;
+  transform: translate(-50%, 0);
+}
+
+.winner-2 {
+  top: 22%;
+  left: 25%;
+}
+
+.winner-3 {
+  top: 26%;
+  right: 18%;
+}
+
+.progress-container {
+  height: 15px;
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.progress-filler {
+  height: 100%;
+  background-color: #EBC344; /* Primary blue color */
+  border-radius: inherit;
+  text-align: right;
+  transition: width 0.5s ease-in-out;
+}
+
+.answer-item {
+  min-height: 50px;
+  padding: 15px;
+  text-align: center;
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: ease-in-out 0.2s;
+}
+
+.answer-item.active {
+  border: 4px solid #AA0077;
+}
+
+.answer-no {
+  padding: 5px;
+  background-color: white;
+  color: black;
+  border-radius: 50%;
+  min-width: 35px;
+  transition: ease-in-out 0.2s;
+}
+
+.answer-no.active {
+  color: white;
+  background-color: #AA0077;
+}
+
+.faq-item-container {
+  min-height: 30px;
+  padding: 2px;
+  text-align: center;
+  border: 2px solid white;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 7px;
+}
+
+@media (min-width: 1024px) {
+  .winner-1 {
+    left: 52%;
+  }
+
+  .winner-2 {
+    left: 40%;
+    top: 25%
+  }
+
+  .winner-3 {
+    right: 37%;
+    top: 30%;
+  }
+
+  .profile-pic {
+    height: 80px;
+    width: 80px;
+  }
+
+  .crown {
+    font-size: 60px;
+
+    top: -80px;
+
+  }
+
+  .splash-logo {
+    height: 320px;
+  }
+  
+}

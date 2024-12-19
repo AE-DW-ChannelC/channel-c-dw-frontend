@@ -1,0 +1,19 @@
+<svg width="1512" height="1021" viewBox="0 0 1512 1021" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_7_2)">
+<path d="M0 9.99998C0 4.47713 4.47715 0 10 0H1502C1507.52 0 1512 4.47715 1512 10V1021H0V9.99998Z" fill="url(#paint0_linear_7_2)"/>
+<ellipse cx="399.075" cy="830.285" rx="221.075" ry="208.715" fill="#FCFCFC" fill-opacity="0.1"/>
+<ellipse cx="395.18" cy="133.952" rx="65.2513" ry="60.9522" fill="#FCFCFC" fill-opacity="0.1"/>
+<ellipse cx="985.363" cy="247.545" rx="115.894" ry="111.746" fill="#FCFCFC" fill-opacity="0.1"/>
+<ellipse cx="539.316" cy="356.52" rx="74.9903" ry="71.1109" fill="#FCFCFC" fill-opacity="0.1"/>
+<ellipse cx="856.808" cy="630.805" rx="41.8777" ry="38.7878" fill="#FCFCFC" fill-opacity="0.1"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_7_2" x1="756" y1="0" x2="756" y2="1021" gradientUnits="userSpaceOnUse">
+<stop stop-color="#00ABA2"/>
+<stop offset="1" stop-color="#FF01B4"/>
+</linearGradient>
+<clipPath id="clip0_7_2">
+<path d="M0 9.99998C0 4.47713 4.47715 0 10 0H1502C1507.52 0 1512 4.47715 1512 10V1021H0V9.99998Z" fill="white"/>
+</clipPath>
+</defs>
+</svg>
