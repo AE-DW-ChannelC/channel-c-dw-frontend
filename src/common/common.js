@@ -28,6 +28,6 @@ export function truncateString(str, maxLength) {
 }
 
 export function capitalizeFirstLetter(string) {
-  return string.replace(/^./, string[0].toUpperCase())
+  return string?.replace(/^./, string[0].toUpperCase())
 }
 
