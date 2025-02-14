@@ -1,9 +1,4 @@
 import React, { useState } from "react";
-import LOGO_MAIN from "../assets/logo_main.svg";
-import PRO_PIC from "../assets/propic.png";
-import FloatingNavbar from "../components/FloatingNavbar";
-import POINT_ICON from "../assets/point.svg";
-import MOTOR_BIKE from "../assets/motorbike.png";
 import Accordion from "react-bootstrap/Accordion";
 import { Card, useAccordionButton } from "react-bootstrap";
 import { IoIosArrowDropdown, IoIosArrowDropup } from "react-icons/io";
@@ -88,7 +83,6 @@ function FAQPage() {
 function CustomToggle({ children, eventKey }) {
   const [key, setkey] = useState(eventKey);
   const decoratedOnClick = useAccordionButton(eventKey, () => {
-    console.log("totally custom!");
     setkey(eventKey);
   });
 
