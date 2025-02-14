@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import LOGO_MAIN from "../assets/logo_main.svg";
-import PRO_PIC from "../assets/propic.png";
-import FloatingNavbar from "../components/FloatingNavbar";
-import POINT_ICON from "../assets/point.svg";
-import MOTOR_BIKE from "../assets/motorbike.png";
-import Accordion from "react-bootstrap/Accordion";
-import { Card, useAccordionButton } from "react-bootstrap";
-import { IoIosArrowDropdown, IoIosArrowDropup } from "react-icons/io";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function TCPage({ menuBtn }) {
   const navigate = useNavigate();

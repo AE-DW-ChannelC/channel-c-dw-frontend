@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import LOGO_MAIN from "../assets/logo_main.svg";
 import { FaArrowRight } from "react-icons/fa";
-import { CiAlarmOn } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
 
 function SplashPage() {
