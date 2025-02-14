@@ -10,7 +10,7 @@ import CountdownTimer from "../components/CountDownTimer";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import { LeaderboardService } from "../services/leaderboard.service";
 import Swal from "sweetalert2";
-import AUDIO from "../assets/01.wav"
+import AUDIO from "../assets/01.wav";
 
 function QuestionPage() {
   const [screen, setScreen] = useState("question");
@@ -27,6 +27,7 @@ function QuestionPage() {
   const [answer_d, setAnswer_d] = useState("");
 
   const [timer, setTimer] = useState(null);
+  const [audioFile, setAudioFile] = useState(null);
 
   const [freeQuestions, setFreeQuestions] = useState(
     userData?.leaderboard?.answered_questions_by_date?.find(
@@ -48,11 +49,13 @@ function QuestionPage() {
     try {
       setLoading(true);
       const response = await QuestionService.getQuestions(userData?.mobile);
+      setAudioFile(response.question?.audio_file?.url || null);
       setQuestions(response.question.question);
-      setAnswer_a(response.question.answer_A);
-      setAnswer_b(response.question.answer_B);
-      setAnswer_c(response.question.answer_C);
-      setAnswer_d(response.question.answer_D);
+      setAnswer_a(response.question?.answer_A || null);
+      setAnswer_b(response.question?.answer_B || null);
+      setAnswer_c(response.question?.answer_C || null);
+      setAnswer_d(response.question?.answer_D || null);
+
       setQuestionId(response.question.id);
       setTimer(response.question.timer_seconds);
     } catch (error) {
@@ -185,7 +188,7 @@ function QuestionPage() {
         </div>
       </div>
       <LoadingFullscreen loading={loading} />
-      <audio src={AUDIO} autoPlay />
+      {audioFile && <audio src={audioFile} autoPlay />}
       <div className="container">
         <div
           className="text-center text-white mt-4"
@@ -238,50 +241,66 @@ function QuestionPage() {
             </div>
           </div>
           <div className="mt-4">
-            <div
-              className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                selectedAnswer == "A" && "active"
-              }`}
-              onClick={() => setSelectedAnswer("A")}
-            >
-              <div className={`answer-no ${selectedAnswer == "A" && "active"}`}>
-                A
+            {answer_a && (
+              <div
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
+                  selectedAnswer == "A" && "active"
+                }`}
+                onClick={() => setSelectedAnswer("A")}
+              >
+                <div
+                  className={`answer-no ${selectedAnswer == "A" && "active"}`}
+                >
+                  A
+                </div>
+                <div className="pt-1">{answer_a}</div>
               </div>
-              <div className="pt-1">{answer_a}</div>
-            </div>
-            <div
-              className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                selectedAnswer == "B" && "active"
-              }`}
-              onClick={() => setSelectedAnswer("B")}
-            >
-              <div className={`answer-no ${selectedAnswer == "B" && "active"}`}>
-                B
+            )}
+            {answer_b && (
+              <div
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
+                  selectedAnswer == "B" && "active"
+                }`}
+                onClick={() => setSelectedAnswer("B")}
+              >
+                <div
+                  className={`answer-no ${selectedAnswer == "B" && "active"}`}
+                >
+                  B
+                </div>
+                <div className="pt-1">{answer_b}</div>
               </div>
-              <div className="pt-1">{answer_b}</div>
-            </div>
-            <div
-              className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                selectedAnswer == "C" && "active"
-              }`}
-              onClick={() => setSelectedAnswer("C")}
-            >
-              <div className={`answer-no ${selectedAnswer == "C" && "active"}`}>
-                C
+            )}
+            {answer_c && (
+              <div
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
+                  selectedAnswer == "C" && "active"
+                }`}
+                onClick={() => setSelectedAnswer("C")}
+              >
+                <div
+                  className={`answer-no ${selectedAnswer == "C" && "active"}`}
+                >
+                  C
+                </div>
+                <div className="pt-1">{answer_c}</div>
               </div>
-              <div className="pt-1">{answer_c}</div>
-            </div>
-            <div
-              className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                selectedAnswer == "D" && "active"
-              }`}
-              onClick={() => setSelectedAnswer("D")}
-            >
-              <div className={`answer-no ${selectedAnswer == "D" && "active"}`}>
-                D
+            )}
+            {answer_d && (
+              <div
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
+                  selectedAnswer == "D" && "active"
+                }`}
+                onClick={() => setSelectedAnswer("D")}
+              >
+                <div
+                  className={`answer-no ${selectedAnswer == "D" && "active"}`}
+                >
+                  D
+                </div>
+                <div className="pt-1">{answer_d}</div>
               </div>
-              <div className="pt-1">{answer_d}</div>
-            </div>
+            )}
           </div>
           <div className="mt-4">
             <button
