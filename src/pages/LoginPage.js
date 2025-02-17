@@ -17,7 +17,7 @@ const showErrorAlert = (message) =>
  * Login Component
  * Handles the mobile number input and navigates to OTP verification.
  */
-const LoginComponent = ({ setComponentPage, setMobile, setLoading }) => {
+const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp }) => {
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -34,8 +34,9 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading }) => {
 
     try {
       setLoading(true);
-      await UserService.loginUser(mobile);
+      const response = await UserService.loginUser(mobile);
       setMobile(mobile);
+      setTestOtp(response?.data?.latest_otp)
       setComponentPage("otp");
     } catch (error) {
       console.error(error);
@@ -125,7 +126,7 @@ const EnterInfoComponent = ({ setLoading }) => {
  * OTP Component
  * Handles OTP input and verification.
  */
-const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading }) => {
+const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, TestOtp }) => {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState("");
@@ -137,6 +138,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading }) =
       setLoading(true);
       const response = await UserService.verifyOtp(mobile, otp);
       setUserDetail(response.data);
+
 
       if (response.first_time) {
         setComponentPage("info");
@@ -162,6 +164,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading }) =
             <CountdownTimer initialSeconds={120} completed={() => console.log("")} />
           </span>
         </div>
+        <p className="fw-bold" style={{color: "black"}}>Please use this test OTP : {TestOtp}</p>
         <div className="d-flex gap-4 mt-4">
           {Array(4)
             .fill("")
@@ -195,6 +198,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading }) =
 function LoginPage() {
   const [componentPage, setComponentPage] = useState("login");
   const [mobile, setMobile] = useState(null);
+  const [TestOtp, setTestOtp] = useState("")
   const [userData, setUserDetail] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -209,11 +213,13 @@ function LoginPage() {
           setComponentPage={setComponentPage}
           setMobile={setMobile}
           setLoading={setLoading}
+          setTestOtp={setTestOtp}
         />
       ) : componentPage === "otp" ? (
         <OTPComponent
           setComponentPage={setComponentPage}
           mobile={mobile}
+          TestOtp={TestOtp}
           setUserDetail={setUserDetail}
           setLoading={setLoading}
         />
