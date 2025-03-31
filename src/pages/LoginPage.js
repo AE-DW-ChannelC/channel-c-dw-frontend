@@ -161,7 +161,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
         <div className="text-end mt-4 fs-5">
           <span>
             <CiAlarmOn />{" "}
-            <CountdownTimer initialSeconds={120} completed={() => console.log("")} />
+            <CountdownTimer initialSeconds={60} completed={() => console.log("")} />
           </span>
         </div>
         <p className="fw-bold" style={{color: "black"}}>Please use this test OTP : {TestOtp}</p>
@@ -180,7 +180,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
         </div>
       </div>
       <div className="text-white mt-4">
-        *මෙම කෙටි පණිවිඩය විනාඩි 15කට වලංගු වේ
+        *මෙම කෙටි අංකය තත්පර 60ක් සදහා වලංගු වේ.
       </div>
       <div className="validation-message text-center mt-2">{alertMessage}</div>
       <div className={"text-center" + (alertMessage ? " mt-3" : " mt-5")}>
