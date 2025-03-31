@@ -130,13 +130,15 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState("");
+  const [otp, setOtp] = useState([]);
 
   const verifyOtp = async () => {
-    const otp = inputRefs.current.map((input) => input.value).join("");
+    const otpStr = inputRefs.current.map((input) => input.value).join("");
+ 
 
     try {
       setLoading(true);
-      const response = await UserService.verifyOtp(mobile, otp);
+      const response = await UserService.verifyOtp(mobile, otpStr);
       setUserDetail(response.data);
 
 
@@ -151,6 +153,26 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
       setAlertMessage("OTP අංකය වැරදියි. නැවත උත්සහ කරන්න");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChange = (e, index) => {
+    const value = e.target.value;
+
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value.slice(0, 1);
+    setOtp(newOtp);
+    
+    if (value && index < 3) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
     }
   };
 
@@ -174,7 +196,8 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
                 ref={(el) => (inputRefs.current[index] = el)}
                 className="login-input"
                 maxLength={1}
-                onChange={(e) => /^[0-9]?$/.test(e.target.value) || (e.target.value = "")}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
               />
             ))}
         </div>
@@ -191,6 +214,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
     </div>
   );
 };
+
 
 /**
  * Main Login Page
