@@ -21,8 +21,13 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const phoneRegex = /^07[0-8]\d{7}$/;
+
   const validateMobile = () => {
-    if (mobile.length !== 10 || !mobile.startsWith("07")) {
+     
+    const isValidMobile = phoneRegex.test(mobile);
+
+    if (!isValidMobile) {
       setAlertMessage("දුරකථන අංකය වැරදියි. \n නැවත උත්සහ කරන්න");
       return false;
     }
