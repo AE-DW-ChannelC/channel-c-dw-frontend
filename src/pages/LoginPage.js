@@ -35,9 +35,10 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
     try {
       setLoading(true);
       const response = await UserService.loginUser(mobile);
+      TokenService.setUser(response)
       setMobile(mobile);
       setTestOtp(response?.data?.latest_otp)
-      setComponentPage("otp");
+      setComponentPage("username");
     } catch (error) {
       console.error(error);
       showErrorAlert("Something went wrong!");
@@ -71,8 +72,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
  * Enter Info Component
  * Handles user full name input and submission.
  */
-const EnterInfoComponent = ({ setLoading }) => {
-  const navigate = useNavigate();
+const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
   const [fullName, setFullName] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -89,11 +89,10 @@ const EnterInfoComponent = ({ setLoading }) => {
 
     try {
       setLoading(true);
-      const userId = TokenService.getUserData().userid;
+      const userId = TokenService.getUserData().id;
       await UserService.updateUser(userId, { full_name: fullName });
       TokenService.updateFullName(fullName);
-      navigate("/home");
-      window.location.reload();
+      setComponentPage("otp");
     } catch (error) {
       console.error(error);
       showErrorAlert("Something went wrong!");
@@ -134,20 +133,14 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
 
   const verifyOtp = async () => {
     const otpStr = inputRefs.current.map((input) => input.value).join("");
- 
+
 
     try {
       setLoading(true);
       const response = await UserService.verifyOtp(mobile, otpStr);
       setUserDetail(response.data);
-
-
-      if (response.first_time) {
-        setComponentPage("info");
-      } else {
-        navigate("/home");
-        window.location.reload();
-      }
+      window.location.reload();
+      
     } catch (error) {
       console.error(error);
       setAlertMessage("OTP අංකය වැරදියි. නැවත උත්සහ කරන්න");
@@ -164,7 +157,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
     const newOtp = [...otp];
     newOtp[index] = value.slice(0, 1);
     setOtp(newOtp);
-    
+
     if (value && index < 3) {
       inputRefs.current[index + 1].focus();
     }
@@ -186,7 +179,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
             <CountdownTimer initialSeconds={60} completed={() => console.log("")} />
           </span>
         </div>
-        <p className="fw-bold" style={{color: "black"}}>Please use this test OTP : {TestOtp}</p>
+        <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p>
         <div className="d-flex gap-4 mt-4">
           {Array(4)
             .fill("")
@@ -247,8 +240,18 @@ function LoginPage() {
           setUserDetail={setUserDetail}
           setLoading={setLoading}
         />
+      ) : componentPage === "username" ? (
+        <EnterInfoComponent
+          setLoading={setLoading}
+          setComponentPage={setComponentPage}
+        />
       ) : (
-        <EnterInfoComponent setLoading={setLoading} />
+        <LoginComponent
+          setComponentPage={setComponentPage}
+          setMobile={setMobile}
+          setLoading={setLoading}
+          setTestOtp={setTestOtp}
+        />
       )}
     </div>
   );
