@@ -231,7 +231,7 @@ const EditInfoPage = ({ setIsEdit }) => {
         }}
       >
         <div className="text-start">
-          <div>සම්පූර්ණ නම</div>
+          <div>නම</div>
           <input
             className="login-input mt-2"
             value={fullName}
