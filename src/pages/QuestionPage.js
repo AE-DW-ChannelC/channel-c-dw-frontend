@@ -216,7 +216,7 @@ function QuestionPage() {
 
           <div className="d-flex justify-content-between gap-5 mt-4 px-2">
             <div style={{ fontSize: "11px", textAlign: "start" }}>
-              ප්‍රශ්ණයට පිළිඹුරු දීමට ඔබට ඇත්තේ තවත් තත්පර
+              ප්‍රශ්ණයට පිළිතුරු දීමට ඔබට ඇත්තේ තවත් තත්පර
             </div>
             <div
               style={{
