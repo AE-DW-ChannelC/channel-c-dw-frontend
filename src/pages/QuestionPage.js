@@ -71,6 +71,7 @@ function QuestionPage() {
   };
 
   const verifyAnswer = async () => {
+    setAudioFile(null);
     try {
       if (selectedAnswer == "") {
         await updateLeaderboard(0);
