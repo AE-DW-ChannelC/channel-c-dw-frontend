@@ -39,7 +39,7 @@ const LoginComponent = ({ setComponentPage, setMobile }) => {
   return (
     <div className="animate__animated animate__bounceInUp">
       <div className="text-white text-center mt-5 mb-5">
-        <h4 className="fw-bold">ජංගම දුරකථනය ඇතුලත් කරන්න</h4>
+        <h4 className="fw-bold">මොබයිල් නොම්බරය ඇතුලත් කරන්න</h4>
         <input
           className="login-input mt-4"
           onChange={(e) => setLocalMobile(e.target.value)}
