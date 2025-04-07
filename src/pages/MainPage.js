@@ -130,9 +130,9 @@ function MainPage() {
         </div>
 
         {/* Questions Button */}
-        <div className="text-center mt-4">
+        <div className="text-center mt-4 ">
           <button
-            className={`main-button ${!campaign && "disabled"}`}
+            className={`main-button ${!campaign && "disabled"} w-100`}
             style={{ fontSize: "13px", padding: 16, borderColor: "#AA0077" }}
             onClick={() => navigate("/tc?btn=true")}
             disabled={!campaign}
