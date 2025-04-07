@@ -17,7 +17,7 @@ const showErrorAlert = (message) =>
  * Login Component
  * Handles the mobile number input and navigates to OTP verification.
  */
-const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp }) => {
+const LoginComponent = ({ setComponentPage, setMobile }) => {
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -29,22 +29,11 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
     return true;
   };
 
-  const login = async () => {
+  const login = () => {
     if (!validateMobile()) return;
+    setMobile(mobile);
+    setComponentPage("username");
 
-    try {
-      setLoading(true);
-      const response = await UserService.loginUser(mobile);
-      TokenService.setUser(response)
-      setMobile(mobile);
-      setTestOtp(response?.data?.latest_otp)
-      setComponentPage("username");
-    } catch (error) {
-      console.error(error);
-      showErrorAlert("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -72,7 +61,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
  * Enter Info Component
  * Handles user full name input and submission.
  */
-const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
+const EnterInfoComponent = ({ setLoading, setComponentPage, mobile, setTestOtp }) => {
   const [fullName, setFullName] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -89,9 +78,16 @@ const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
 
     try {
       setLoading(true);
+      const response = await UserService.loginUser(mobile);
+      TokenService.setUser(response);
+
+      //it can be improve as a one login request that accept mobile and username as parameters.
       const userId = TokenService.getUserData().id;
       await UserService.updateUser(userId, { full_name: fullName });
       TokenService.updateFullName(fullName);
+
+      setTestOtp(response?.data?.latest_otp)
+
       setComponentPage("otp");
     } catch (error) {
       console.error(error);
@@ -125,11 +121,33 @@ const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
  * OTP Component
  * Handles OTP input and verification.
  */
-const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, TestOtp }) => {
+const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }) => {
   const inputRefs = useRef([]);
   const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState("");
   const [otp, setOtp] = useState([]);
+  const [isTimeOut, setIsTimeOut] = useState(false);
+
+  const handleTimeOut = async () => {
+    setIsTimeOut(true);
+  }
+
+  const requestOtpAgain = async () => {
+    try {
+      setLoading(true);
+      const response = await UserService.loginUser(mobile);
+      TokenService.setUser(response);
+      setTestOtp(response?.data?.latest_otp)
+      setIsTimeOut(false);
+      
+    }
+    catch (error) {
+      console.error(error);
+      showErrorAlert("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const verifyOtp = async () => {
     const otpStr = inputRefs.current.map((input) => input.value).join("");
@@ -140,7 +158,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
       const response = await UserService.verifyOtp(mobile, otpStr);
       setUserDetail(response.data);
       window.location.reload();
-      
+
     } catch (error) {
       console.error(error);
       setAlertMessage("OTP අංකය වැරදියි. නැවත උත්සහ කරන්න");
@@ -176,7 +194,7 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
         <div className="text-end mt-4 fs-5">
           <span>
             <CiAlarmOn />{" "}
-            <CountdownTimer initialSeconds={60} completed={() => console.log("")} />
+            <CountdownTimer initialSeconds={60} completed={handleTimeOut} />
           </span>
         </div>
         <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p>
@@ -199,8 +217,17 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
         *මෙම කෙටි අංකය තත්පර 60ක් සදහා වලංගු වේ.
       </div>
       <div className="validation-message text-center mt-2">{alertMessage}</div>
+      {isTimeOut ?
+        <div
+          className="validation-message text-center mt-2 text-decoration-underline"
+          style={{ cursor: 'pointer' }}
+          onClick={requestOtpAgain}
+        >
+          OTP අංකය කල් ඉකුත් වී ඇත. නැවත උත්සහ කරන්න
+        </div> : null}
+
       <div className={"text-center" + (alertMessage ? " mt-3" : " mt-5")}>
-        <button className="main-button" onClick={verifyOtp}>
+        <button className="main-button" disabled={isTimeOut} onClick={verifyOtp}>
           ඉදිරියට යන්න <FaArrowRight />
         </button>
       </div>
@@ -239,11 +266,14 @@ function LoginPage() {
           TestOtp={TestOtp}
           setUserDetail={setUserDetail}
           setLoading={setLoading}
+          setTestOtp={setTestOtp}
         />
       ) : componentPage === "username" ? (
         <EnterInfoComponent
           setLoading={setLoading}
           setComponentPage={setComponentPage}
+          mobile={mobile}
+          setTestOtp={setTestOtp}
         />
       ) : (
         <LoginComponent
