@@ -2,11 +2,10 @@ import React, { useRef, useState } from "react";
 import LOGO_MAIN from "../assets/logo_main.svg";
 import { FaArrowRight } from "react-icons/fa";
 import { CiAlarmOn } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
 import { UserService } from "../services/user.service";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import TokenService from "../services/token.service";
-import CountdownTimer from "../components/CountDownTimer";
+import OtpCountDown from "../components/OtpCountDown";
 import Swal from "sweetalert2";
 
 // Utility function to show error alerts
@@ -201,7 +200,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp, 
         <div className="text-end mt-4 fs-5">
           <span>
             <CiAlarmOn />{" "}
-            <CountdownTimer seconds={seconds} setSeconds={setSeconds} completed={handleTimeOut} />
+            <OtpCountDown seconds={seconds} setSeconds={setSeconds} completed={handleTimeOut} />
           </span>
         </div>
         <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p>

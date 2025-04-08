@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
-const CountdownTimer = ({ initialSeconds, completed }) => {
-  const [seconds, setSeconds] = useState(initialSeconds);
+const OtpCountDown = ({ completed, seconds, setSeconds }) => {
 
   // Format time as MM:SS
   const formatTime = (totalSeconds) => {
@@ -29,4 +28,4 @@ const CountdownTimer = ({ initialSeconds, completed }) => {
   return formatTime(seconds);
 };
 
-export default CountdownTimer;
+export default OtpCountDown;
