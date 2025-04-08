@@ -16,13 +16,13 @@ const showErrorAlert = (message) =>
  * Login Component
  * Handles the mobile number input and navigates to OTP verification.
  */
-const LoginComponent = ({ setComponentPage, setMobile }) => {
+const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp }) => {
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
   const phoneRegex = /^07[0-8]\d{7}$/;
 
-  const validateMobile = () => { 
+  const validateMobile = () => {
     const isValidMobile = phoneRegex.test(mobile);
     if (!isValidMobile) {
       setAlertMessage("දුරකථන අංකය වැරදියි. \n නැවත උත්සහ කරන්න");
@@ -31,11 +31,29 @@ const LoginComponent = ({ setComponentPage, setMobile }) => {
     return true;
   };
 
-  const login = () => {
+  const login = async () => {
     if (!validateMobile()) return;
-    setMobile(mobile);
-    setComponentPage("username");
 
+    try {
+      setLoading(true);
+      const response = await UserService.loginUser(mobile);
+      TokenService.setUser(response);
+      setMobile(mobile);
+      setTestOtp(response?.data?.latest_otp)
+      const isFirstTime = response?.firstTimeLogin
+      if (isFirstTime == true) {
+        setComponentPage("username");
+      }
+      else {
+        setComponentPage("otp");
+      }
+
+    } catch (error) {
+      console.error(error);
+      showErrorAlert("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +81,7 @@ const LoginComponent = ({ setComponentPage, setMobile }) => {
  * Enter Info Component
  * Handles user full name input and submission.
  */
-const EnterInfoComponent = ({ setLoading, setComponentPage, mobile, setTestOtp }) => {
+const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
   const [fullName, setFullName] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -80,16 +98,9 @@ const EnterInfoComponent = ({ setLoading, setComponentPage, mobile, setTestOtp }
 
     try {
       setLoading(true);
-      const response = await UserService.loginUser(mobile);
-      TokenService.setUser(response);
-
-      //it can be improve as a one login request that accept mobile and username as parameters.
       const userId = TokenService.getUserData().id;
       await UserService.updateUser(userId, { full_name: fullName });
       TokenService.updateFullName(fullName);
-
-      setTestOtp(response?.data?.latest_otp)
-
       setComponentPage("otp");
     } catch (error) {
       console.error(error);
@@ -123,12 +134,15 @@ const EnterInfoComponent = ({ setLoading, setComponentPage, mobile, setTestOtp }
  * OTP Component
  * Handles OTP input and verification.
  */
-const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp, setComponentPage }) => {
+const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }) => {
   const inputRefs = useRef([]);
   const [alertMessage, setAlertMessage] = useState("");
   const [otp, setOtp] = useState([]);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [seconds, setSeconds] = useState(60);
+  const [isNewUser, setIsNewUser] = useState(TokenService.isNewUser());
+
+  const userData = TokenService.getUserData();
 
   const handleTimeOut = async () => {
     setIsTimeOut(true);
@@ -154,6 +168,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp, 
       setLoading(false);
     }
   }
+
 
   const verifyOtp = async () => {
     const otpStr = inputRefs.current.map((input) => input.value).join("");
@@ -191,11 +206,25 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp, 
     if (e.key === 'Backspace' && !otp[index] && index > 0) {
       inputRefs.current[index - 1].focus();
     }
+  }
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour >= 5 && hour < 12) {
+      return "Good Morning";
+    } else if (hour >= 12 && hour < 17) {
+      return "Good Afternoon";
+    } else if (hour >= 17 && hour < 21) {
+      return "Good Evening";
+    } else {
+      return "Good Night";
+    }
   };
 
   return (
     <div className="animate__animated animate__bounceInUp">
       <div className="text-white text-center mt-5">
+        {!isNewUser && <h5>Hi, {getGreeting()} {userData?.full_name}! Welcome back</h5>}
         <h4 className="fw-bold">OTP අංකය ඇතුලත් කරන්න</h4>
         <div className="text-end mt-4 fs-5">
           <span>
@@ -233,7 +262,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp, 
         </div> : null}
 
       <div className={"text-center" + (alertMessage ? " mt-3" : " mt-5")}>
-        <button className={`main-button ${isTimeOut && "disabled"}`}  onClick={verifyOtp}>
+        <button className={`main-button ${isTimeOut && "disabled"}`} onClick={verifyOtp}>
           ඉදිරියට යන්න <FaArrowRight />
         </button>
       </div>
@@ -267,7 +296,6 @@ function LoginPage() {
         />
       ) : componentPage === "otp" ? (
         <OTPComponent
-          setComponentPage={setComponentPage}
           mobile={mobile}
           TestOtp={TestOtp}
           setUserDetail={setUserDetail}
@@ -278,8 +306,6 @@ function LoginPage() {
         <EnterInfoComponent
           setLoading={setLoading}
           setComponentPage={setComponentPage}
-          mobile={mobile}
-          setTestOtp={setTestOtp}
         />
       ) : (
         <LoginComponent
