@@ -102,6 +102,7 @@ function QuestionPage() {
     } finally {
       setLoading(false);
       setTimer(null);
+      setSelectedAnswer("");
     }
   };
 
@@ -189,7 +190,8 @@ function QuestionPage() {
         </div>
       </div>
       <LoadingFullscreen loading={loading} />
-      {audioFile && <audio src={audioFile} autoPlay />}
+      {/* {audioFile && <audio src={audioFile} autoPlay />} */}
+      <audio src={AUDIO} autoPlay />
       <div className="container">
         <div
           className="text-center text-white mt-4"
@@ -387,7 +389,7 @@ const FailedScreen = ({ setScreen, freeQuestions }) => {
       </div>
       <h4 className="fw-bold">වැරදි පිළිතුරකි</h4>
       <p className="px-4">
-        ඊලඟ ප්‍රශ්නය සඳහා නිවැරදි පිලිතුරු ලබා දීමට උත්සහ කරන්න
+        ඊලඟ ප්‍රශ්නය සඳහා නිවැරදි පිළිතුරු ලබා දීමට උත්සහ කරන්න
       </p>
 
       <div>
