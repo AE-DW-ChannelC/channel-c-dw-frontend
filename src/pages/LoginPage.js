@@ -21,8 +21,11 @@ const LoginComponent = ({ setComponentPage, setMobile }) => {
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const validateMobile = () => {
-    if (mobile.length !== 10 || !mobile.startsWith("07")) {
+  const phoneRegex = /^07[0-8]\d{7}$/;
+
+  const validateMobile = () => { 
+    const isValidMobile = phoneRegex.test(mobile);
+    if (!isValidMobile) {
       setAlertMessage("දුරකථන අංකය වැරදියි. \n නැවත උත්සහ කරන්න");
       return false;
     }
@@ -121,15 +124,19 @@ const EnterInfoComponent = ({ setLoading, setComponentPage, mobile, setTestOtp }
  * OTP Component
  * Handles OTP input and verification.
  */
-const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }) => {
+const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp, setComponentPage }) => {
   const inputRefs = useRef([]);
-  const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState("");
   const [otp, setOtp] = useState([]);
   const [isTimeOut, setIsTimeOut] = useState(false);
+  const [seconds, setSeconds] = useState(60);
 
   const handleTimeOut = async () => {
     setIsTimeOut(true);
+    for (let i = 0; i < 4; i++) {
+      inputRefs.current[i].value = "";
+    }
+    inputRefs.current[0].focus();
   }
 
   const requestOtpAgain = async () => {
@@ -139,7 +146,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
       TokenService.setUser(response);
       setTestOtp(response?.data?.latest_otp)
       setIsTimeOut(false);
-      
+      setSeconds(60);
     }
     catch (error) {
       console.error(error);
@@ -194,7 +201,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
         <div className="text-end mt-4 fs-5">
           <span>
             <CiAlarmOn />{" "}
-            <CountdownTimer initialSeconds={60} completed={handleTimeOut} />
+            <CountdownTimer seconds={seconds} setSeconds={setSeconds} completed={handleTimeOut} />
           </span>
         </div>
         <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p>
@@ -227,7 +234,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
         </div> : null}
 
       <div className={"text-center" + (alertMessage ? " mt-3" : " mt-5")}>
-        <button className="main-button" disabled={isTimeOut} onClick={verifyOtp}>
+        <button className={`main-button ${isTimeOut && "disabled"}`}  onClick={verifyOtp}>
           ඉදිරියට යන්න <FaArrowRight />
         </button>
       </div>

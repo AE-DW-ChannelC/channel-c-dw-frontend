@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
-const CountdownTimer = ({ initialSeconds, completed }) => {
-  const [seconds, setSeconds] = useState(initialSeconds);
+const CountdownTimer = ({ completed, seconds, setSeconds }) => {
 
   // Format time as MM:SS
   const formatTime = (totalSeconds) => {
