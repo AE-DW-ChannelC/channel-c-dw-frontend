@@ -190,8 +190,7 @@ function QuestionPage() {
         </div>
       </div>
       <LoadingFullscreen loading={loading} />
-      {/* {audioFile && <audio src={audioFile} autoPlay />} */}
-      <audio src={AUDIO} autoPlay />
+      {audioFile && <audio src={audioFile} autoPlay />}
       <div className="container">
         <div
           className="text-center text-white mt-4"
