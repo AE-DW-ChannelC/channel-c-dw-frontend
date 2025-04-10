@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import LOGO_MAIN from "../assets/logo_main.svg";
+import { FaSyncAlt } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { CiAlarmOn } from "react-icons/ci";
 import { UserService } from "../services/user.service";
@@ -7,6 +8,7 @@ import LoadingFullscreen from "../components/LoadingFullscreen";
 import TokenService from "../services/token.service";
 import OtpCountDown from "../components/OtpCountDown";
 import Swal from "sweetalert2";
+
 
 // Utility function to show error alerts
 const showErrorAlert = (message) =>
@@ -224,7 +226,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
   return (
     <div className="animate__animated animate__bounceInUp">
       <div className="text-white text-center mt-5">
-        {!isNewUser && <h5>Hi, {getGreeting()} {userData?.full_name}! Welcome back</h5>}
+        {!isNewUser && <h5>Hi, {getGreeting()} {userData?.full_name}! <br /> Welcome Back!</h5>}
         <h4 className="fw-bold">OTP අංකය ඇතුලත් කරන්න</h4>
         <div className="text-end mt-4 fs-5">
           <span>
@@ -252,18 +254,16 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
         *මෙම කෙටි අංකය තත්පර 60ක් සදහා වලංගු වේ.
       </div>
       <div className="validation-message text-center mt-2">{alertMessage}</div>
-      {isTimeOut ?
-        <div
-          className="validation-message text-center mt-2 text-decoration-underline"
-          style={{ cursor: 'pointer' }}
-          onClick={requestOtpAgain}
-        >
-          OTP අංකය කල් ඉකුත් වී ඇත. නැවත උත්සහ කරන්න
-        </div> : null}
 
       <div className={"text-center" + (alertMessage ? " mt-3" : " mt-5")}>
         <button className={`main-button ${isTimeOut && "disabled"}`} onClick={verifyOtp}>
           ඉදිරියට යන්න <FaArrowRight />
+        </button>
+      </div>
+      <div className={"text-center mt-4"}>
+        <button className={`btn-otp-resend  ${!isTimeOut && "disabled"}`} onClick={requestOtpAgain}>
+          <FaSyncAlt /> නැවත උත්සහ කරන්න
+
         </button>
       </div>
     </div>
