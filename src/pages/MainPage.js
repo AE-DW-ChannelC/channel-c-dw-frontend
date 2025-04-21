@@ -103,9 +103,9 @@ function MainPage() {
         <div className="dashboard-main mt-4 text-start">
           <div className="d-flex justify-content-between">
             <div>
-              <h4 className="fw-bold">සුභ දවසක්</h4>
+              <h4 className="fw-bold">👋 සුභ දවසක්</h4>
               <h5>{truncateString(userData?.full_name, 20)}</h5>
-              <p>දැනුමයි වාසනවායි තරඟයට ඔබ සාරෙන් පිලිගන්නවා...</p>
+              <p>දැනුමයි වාසනවායි තරඟයට ඔබ සාදරයෙන් පිලිගන්නවා...</p>
               <p className="text-white">සුභ පැතුම්...!</p>
             </div>
             <div>
@@ -130,9 +130,9 @@ function MainPage() {
         </div>
 
         {/* Questions Button */}
-        <div className="text-center mt-4">
+        <div className="text-center mt-4 ">
           <button
-            className={`main-button ${!campaign && "disabled"}`}
+            className={`main-button ${!campaign && "disabled"} w-100`}
             style={{ fontSize: "13px", padding: 16, borderColor: "#AA0077" }}
             onClick={() => navigate("/tc?btn=true")}
             disabled={!campaign}
@@ -142,10 +142,10 @@ function MainPage() {
         </div>
 
         {/* Previous Winners */}
-        <div className="text-white mt-4">
-          <h5 className="fw-bold">පසුගිය මාසයේ ජයග්‍රහකයෝ</h5>
+        <div className="mt-4">
+          <h5 className="fw-bold text-center" >පසුගිය මාසයේ ජයග්‍රහකයෝ</h5>
           <div
-            className="leaderboard-dash mt-3"
+            className="leaderboard-dash text-white mt-3"
             style={{ maxHeight: "400px", overflowY: "auto" }}
           >
             {prevWinners?.map((winner, index) => (
@@ -183,13 +183,14 @@ function MainPage() {
 
         {/* FAQ Button */}
         <div className="text-center mt-4">
-          <button
-            className="main-button"
-            style={{ fontSize: "13px", padding: 16 }}
+          <div
             onClick={() => navigate("/faq")}
+            className="text-center text-white mt-4 text-decoration-underline"
+            style={{ cursor: 'pointer' }}
           >
             තරග විස්තර දැන ගැනීමට පිවිසෙන්න
-          </button>
+          </div>
+
         </div>
 
         {/* Footer Text */}
@@ -201,11 +202,15 @@ function MainPage() {
           <span
             className="fw-bold text-decoration-underline"
             onClick={() => navigate("/tc")}
+            style={{ cursor: 'pointer' }}
           >
             Terms of Conditions
           </span>{" "}
           and{" "}
-          <span className="fw-bold text-decoration-underline">
+          <span
+            className="fw-bold text-decoration-underline"
+            style={{ cursor: 'pointer' }}
+          >
             Privacy of Policy
           </span>
         </div>

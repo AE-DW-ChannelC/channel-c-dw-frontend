@@ -71,6 +71,7 @@ function QuestionPage() {
   };
 
   const verifyAnswer = async () => {
+    setAudioFile(null);
     try {
       if (selectedAnswer == "") {
         await updateLeaderboard(0);
@@ -101,6 +102,7 @@ function QuestionPage() {
     } finally {
       setLoading(false);
       setTimer(null);
+      setSelectedAnswer("");
     }
   };
 
@@ -216,7 +218,7 @@ function QuestionPage() {
 
           <div className="d-flex justify-content-between gap-5 mt-4 px-2">
             <div style={{ fontSize: "11px", textAlign: "start" }}>
-              ප්‍රශ්ණයට පිළිඹුරු දීමට ඔබට ඇත්තේ තවත් තත්පර
+              ප්‍රශ්ණයට පිළිතුරු දීමට ඔබට ඇත්තේ තවත් තත්පර
             </div>
             <div
               style={{
@@ -386,7 +388,7 @@ const FailedScreen = ({ setScreen, freeQuestions }) => {
       </div>
       <h4 className="fw-bold">වැරදි පිළිතුරකි</h4>
       <p className="px-4">
-        ඊලඟ ප්‍රශ්නය සඳහා නිවැරදි පිලිතුරු ලබා දීමට උත්සහ කරන්න
+        ඊලඟ ප්‍රශ්නය සඳහා නිවැරදි පිළිතුරු ලබා දීමට උත්සහ කරන්න
       </p>
 
       <div>

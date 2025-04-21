@@ -10,6 +10,14 @@ import Swal from "sweetalert2";
 function MyInfoPage() {
   const [isEdit, setIsEdit] = useState(false);
   const userData = TokenService.getUserData();
+
+  const handleUnsubscribe = ()=>{
+    const isUserConfirmed = window.confirm("Are you sure you want to unsubscribe?");
+    if(isUserConfirmed){
+      TokenService.removeUser();
+    }
+  }
+
   return !isEdit ? (
     <div className="container text-white text-center">
       <div className="text-center pt-3 animate__animated animate__bounceIn">
@@ -64,7 +72,7 @@ function MyInfoPage() {
               backgroundColor: "gray",
               borderColor: "#4B1B1B",
             }}
-            onClick={() => TokenService.removeUser()}
+            onClick={handleUnsubscribe}
           >
             Logout
           </button>
@@ -72,7 +80,7 @@ function MyInfoPage() {
         <div className="mt-4">
           <button
             className="main-button"
-            onClick={() => TokenService.removeUser()}
+            onClick={handleUnsubscribe}
             style={{
               fontSize: "13px",
               padding: 16,
@@ -231,7 +239,7 @@ const EditInfoPage = ({ setIsEdit }) => {
         }}
       >
         <div className="text-start">
-          <div>සම්පූර්ණ නම</div>
+          <div>නම</div>
           <input
             className="login-input mt-2"
             value={fullName}

@@ -1,13 +1,14 @@
 import React, { useRef, useState } from "react";
 import LOGO_MAIN from "../assets/logo_main.svg";
+import { FaSyncAlt } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
 import { CiAlarmOn } from "react-icons/ci";
-import { useNavigate } from "react-router-dom";
 import { UserService } from "../services/user.service";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import TokenService from "../services/token.service";
-import CountdownTimer from "../components/CountDownTimer";
+import OtpCountDown from "../components/OtpCountDown";
 import Swal from "sweetalert2";
+
 
 // Utility function to show error alerts
 const showErrorAlert = (message) =>
@@ -21,8 +22,11 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const phoneRegex = /^07[0-8]\d{7}$/;
+
   const validateMobile = () => {
-    if (mobile.length !== 10 || !mobile.startsWith("07")) {
+    const isValidMobile = phoneRegex.test(mobile);
+    if (!isValidMobile) {
       setAlertMessage("දුරකථන අංකය වැරදියි. \n නැවත උත්සහ කරන්න");
       return false;
     }
@@ -35,9 +39,17 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
     try {
       setLoading(true);
       const response = await UserService.loginUser(mobile);
+      TokenService.setUser(response);
       setMobile(mobile);
       setTestOtp(response?.data?.latest_otp)
-      setComponentPage("otp");
+      const isFirstTime = response?.firstTimeLogin
+      if (isFirstTime == true) {
+        setComponentPage("username");
+      }
+      else {
+        setComponentPage("otp");
+      }
+
     } catch (error) {
       console.error(error);
       showErrorAlert("Something went wrong!");
@@ -49,7 +61,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
   return (
     <div className="animate__animated animate__bounceInUp">
       <div className="text-white text-center mt-5 mb-5">
-        <h4 className="fw-bold">ජංගම දුරකථනය ඇතුලත් කරන්න</h4>
+        <h4 className="fw-bold">මොබයිල් නොම්බරය ඇතුලත් කරන්න</h4>
         <input
           className="login-input mt-4"
           onChange={(e) => setLocalMobile(e.target.value)}
@@ -71,8 +83,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
  * Enter Info Component
  * Handles user full name input and submission.
  */
-const EnterInfoComponent = ({ setLoading }) => {
-  const navigate = useNavigate();
+const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
   const [fullName, setFullName] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -89,11 +100,10 @@ const EnterInfoComponent = ({ setLoading }) => {
 
     try {
       setLoading(true);
-      const userId = TokenService.getUserData().userid;
+      const userId = TokenService.getUserData().id;
       await UserService.updateUser(userId, { full_name: fullName });
       TokenService.updateFullName(fullName);
-      navigate("/home");
-      window.location.reload();
+      setComponentPage("otp");
     } catch (error) {
       console.error(error);
       showErrorAlert("Something went wrong!");
@@ -126,26 +136,52 @@ const EnterInfoComponent = ({ setLoading }) => {
  * OTP Component
  * Handles OTP input and verification.
  */
-const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, TestOtp }) => {
+const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }) => {
   const inputRefs = useRef([]);
-  const navigate = useNavigate();
   const [alertMessage, setAlertMessage] = useState("");
+  const [otp, setOtp] = useState([]);
+  const [isTimeOut, setIsTimeOut] = useState(false);
+  const [seconds, setSeconds] = useState(60);
+  const [isNewUser, setIsNewUser] = useState(TokenService.isNewUser());
+
+  const userData = TokenService.getUserData();
+
+  const handleTimeOut = async () => {
+    setIsTimeOut(true);
+    for (let i = 0; i < 4; i++) {
+      inputRefs.current[i].value = "";
+    }
+    inputRefs.current[0].focus();
+  }
+
+  const requestOtpAgain = async () => {
+    try {
+      setLoading(true);
+      const response = await UserService.loginUser(mobile);
+      TokenService.setUser(response);
+      setTestOtp(response?.data?.latest_otp)
+      setIsTimeOut(false);
+      setSeconds(60);
+    }
+    catch (error) {
+      console.error(error);
+      showErrorAlert("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   const verifyOtp = async () => {
-    const otp = inputRefs.current.map((input) => input.value).join("");
+    const otpStr = inputRefs.current.map((input) => input.value).join("");
+
 
     try {
       setLoading(true);
-      const response = await UserService.verifyOtp(mobile, otp);
+      const response = await UserService.verifyOtp(mobile, otpStr);
       setUserDetail(response.data);
+      window.location.reload();
 
-
-      if (response.first_time) {
-        setComponentPage("info");
-      } else {
-        navigate("/home");
-        window.location.reload();
-      }
     } catch (error) {
       console.error(error);
       setAlertMessage("OTP අංකය වැරදියි. නැවත උත්සහ කරන්න");
@@ -154,17 +190,51 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
     }
   };
 
+  const handleChange = (e, index) => {
+    const value = e.target.value;
+
+    if (!/^\d*$/.test(value)) return;
+
+    const newOtp = [...otp];
+    newOtp[index] = value.slice(0, 1);
+    setOtp(newOtp);
+
+    if (value && index < 3) {
+      inputRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      inputRefs.current[index - 1].focus();
+    }
+  }
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour >= 5 && hour < 12) {
+      return "Good Morning";
+    } else if (hour >= 12 && hour < 17) {
+      return "Good Afternoon";
+    } else if (hour >= 17 && hour < 21) {
+      return "Good Evening";
+    } else {
+      return "Good Night";
+    }
+  };
+
   return (
     <div className="animate__animated animate__bounceInUp">
       <div className="text-white text-center mt-5">
+        {!isNewUser && <h5>Hi, {getGreeting()} {userData?.full_name}! <br /> Welcome Back!</h5>}
         <h4 className="fw-bold">OTP අංකය ඇතුලත් කරන්න</h4>
         <div className="text-end mt-4 fs-5">
           <span>
             <CiAlarmOn />{" "}
-            <CountdownTimer initialSeconds={120} completed={() => console.log("")} />
+            <OtpCountDown seconds={seconds} setSeconds={setSeconds} completed={handleTimeOut} />
           </span>
         </div>
-        <p className="fw-bold" style={{color: "black"}}>Please use this test OTP : {TestOtp}</p>
+        <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p>
         <div className="d-flex gap-4 mt-4">
           {Array(4)
             .fill("")
@@ -174,23 +244,32 @@ const OTPComponent = ({ setComponentPage, mobile, setUserDetail, setLoading, Tes
                 ref={(el) => (inputRefs.current[index] = el)}
                 className="login-input"
                 maxLength={1}
-                onChange={(e) => /^[0-9]?$/.test(e.target.value) || (e.target.value = "")}
+                onChange={(e) => handleChange(e, index)}
+                onKeyDown={(e) => handleKeyDown(e, index)}
               />
             ))}
         </div>
       </div>
       <div className="text-white mt-4">
-        *මෙම කෙටි පණිවිඩය විනාඩි 15කට වලංගු වේ
+        *මෙම කෙටි අංකය තත්පර 60ක් සදහා වලංගු වේ.
       </div>
       <div className="validation-message text-center mt-2">{alertMessage}</div>
+
       <div className={"text-center" + (alertMessage ? " mt-3" : " mt-5")}>
-        <button className="main-button" onClick={verifyOtp}>
+        <button className={`main-button ${isTimeOut && "disabled"}`} onClick={verifyOtp}>
           ඉදිරියට යන්න <FaArrowRight />
+        </button>
+      </div>
+      <div className={"text-center mt-4"}>
+        <button className={`btn-otp-resend  ${!isTimeOut && "disabled"}`} onClick={requestOtpAgain}>
+          <FaSyncAlt /> නැවත උත්සහ කරන්න
+
         </button>
       </div>
     </div>
   );
 };
+
 
 /**
  * Main Login Page
@@ -217,14 +296,24 @@ function LoginPage() {
         />
       ) : componentPage === "otp" ? (
         <OTPComponent
-          setComponentPage={setComponentPage}
           mobile={mobile}
           TestOtp={TestOtp}
           setUserDetail={setUserDetail}
           setLoading={setLoading}
+          setTestOtp={setTestOtp}
+        />
+      ) : componentPage === "username" ? (
+        <EnterInfoComponent
+          setLoading={setLoading}
+          setComponentPage={setComponentPage}
         />
       ) : (
-        <EnterInfoComponent setLoading={setLoading} />
+        <LoginComponent
+          setComponentPage={setComponentPage}
+          setMobile={setMobile}
+          setLoading={setLoading}
+          setTestOtp={setTestOtp}
+        />
       )}
     </div>
   );
