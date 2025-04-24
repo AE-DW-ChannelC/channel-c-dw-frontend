@@ -260,6 +260,33 @@
   border-radius: 7px;
 }
 
+.custom-accordion-header .accordion-button {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff;
+}
+
+/* Style the toggle arrow to be white */
+.custom-accordion-header .accordion-button::after {
+  filter: brightness(0) invert(1); /* Make arrow white */
+  background-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.custom-accordion-header .accordion-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 1px solid #fff; /* White rounded border */
+  border-radius: 50%;
+  z-index: 1;
+}
+
+
 @media (min-width: 1024px) {
   .winner-1 {
     left: 52%;
