@@ -39,6 +39,11 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
     try {
       setLoading(true);
       const response = await UserService.loginUser(mobile);
+      if (response.code !== 100) {
+        showErrorAlert(response.message || "Something went wrong!");
+        setLoading(false);
+        return;
+      }
       TokenService.setUser(response);
       setMobile(mobile);
       setTestOtp(response?.data?.latest_otp)
@@ -141,14 +146,15 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
   const [alertMessage, setAlertMessage] = useState("");
   const [otp, setOtp] = useState([]);
   const [isTimeOut, setIsTimeOut] = useState(false);
-  const [seconds, setSeconds] = useState(60);
+  const [seconds, setSeconds] = useState(300
+  );
   const [isNewUser, setIsNewUser] = useState(TokenService.isNewUser());
 
   const userData = TokenService.getUserData();
 
   const handleTimeOut = async () => {
     setIsTimeOut(true);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 6; i++) {
       inputRefs.current[i].value = "";
     }
     inputRefs.current[0].focus();
@@ -199,7 +205,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
     newOtp[index] = value.slice(0, 1);
     setOtp(newOtp);
 
-    if (value && index < 3) {
+    if (value && index < 5) {
       inputRefs.current[index + 1].focus();
     }
   };
@@ -234,9 +240,9 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
             <OtpCountDown seconds={seconds} setSeconds={setSeconds} completed={handleTimeOut} />
           </span>
         </div>
-        <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p>
-        <div className="d-flex gap-4 mt-4">
-          {Array(4)
+        {/* <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p> */}
+        <div className="d-flex gap-2 mt-4">
+          {Array(6)
             .fill("")
             .map((_, index) => (
               <input

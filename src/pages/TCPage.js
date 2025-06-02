@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { UserService } from "../services/user.service";
+import Swal from "sweetalert2";
+import TokenService from "../services/token.service";
 
 function TCPage({ menuBtn }) {
   const navigate = useNavigate();
@@ -7,6 +10,31 @@ function TCPage({ menuBtn }) {
   const queryParams = new URLSearchParams(location.search); // Parse the query string.
 
   const button = queryParams.get("btn"); // Get the value of the "btn" query parameter.
+
+  const userData = TokenService.getUserData();
+
+  const handleDisplayQuestions = async () => {
+    try {
+      const response = await UserService.subscriptionStatus(userData?.mobile);
+      if (response.code === 200) {
+        navigate("/questions");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Please check your subscription status and try again later.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again later.",
+      });
+
+    }
+  }
   return (
     <div className="container">
       <div className="text-center pt-3 animate__animated animate__bounceIn">
@@ -46,7 +74,7 @@ function TCPage({ menuBtn }) {
             <button
               className="main-button"
               style={{ fontSize: "13px", padding: 16 }}
-              onClick={() => navigate("/questions")}
+              onClick={handleDisplayQuestions}
             >
               දැන් ප්‍රශ්න වලට උත්තර දෙන්න
             </button>
