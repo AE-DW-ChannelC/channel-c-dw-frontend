@@ -29,6 +29,8 @@ function QuestionPage() {
   const [timer, setTimer] = useState(null);
   const [audioFile, setAudioFile] = useState(null);
 
+  const [counter, setCounter] = useState(0);
+
   const [freeQuestions, setFreeQuestions] = useState(
     userData?.leaderboard?.answered_questions_by_date?.find(
       (item) => item.date == new Date().toISOString().split("T")[0]
@@ -235,6 +237,7 @@ function QuestionPage() {
               <span className="mt-1">
                 {timer && (
                   <CountdownTimer
+                    setCounter={setCounter}
                     initialSeconds={timer}
                     completed={verifyAnswer}
                   />
@@ -247,7 +250,7 @@ function QuestionPage() {
               <div
                 className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
                   selectedAnswer == "A" && "active"
-                }`}
+                  }`}
                 onClick={() => setSelectedAnswer("A")}
               >
                 <div
@@ -262,7 +265,7 @@ function QuestionPage() {
               <div
                 className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
                   selectedAnswer == "B" && "active"
-                }`}
+                  }`}
                 onClick={() => setSelectedAnswer("B")}
               >
                 <div
@@ -277,7 +280,7 @@ function QuestionPage() {
               <div
                 className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
                   selectedAnswer == "C" && "active"
-                }`}
+                  }`}
                 onClick={() => setSelectedAnswer("C")}
               >
                 <div
@@ -292,7 +295,7 @@ function QuestionPage() {
               <div
                 className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
                   selectedAnswer == "D" && "active"
-                }`}
+                  }`}
                 onClick={() => setSelectedAnswer("D")}
               >
                 <div
@@ -320,7 +323,7 @@ function QuestionPage() {
   ) : screen == "success" ? (
     <SuccessScreen setScreen={setScreen} freeQuestions={freeQuestions} />
   ) : screen == "failed" ? (
-    <FailedScreen setScreen={setScreen} freeQuestions={freeQuestions} />
+    <FailedScreen setScreen={setScreen} freeQuestions={freeQuestions} counter={counter} />
   ) : (
     <TimeoutScreen setScreen={setScreen} freeQuestions={freeQuestions} />
   );
@@ -374,7 +377,7 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
   );
 };
 
-const FailedScreen = ({ setScreen, freeQuestions }) => {
+const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
   const navigate = useNavigate();
   return (
     <div className="container text-center text-white">
@@ -414,7 +417,7 @@ const FailedScreen = ({ setScreen, freeQuestions }) => {
             fontWeight: "bold",
           }}
         >
-          <IoAlarmOutline /> 00:12
+          <IoAlarmOutline /> {counter > 9 ? `00:${counter}` : "00:0" + counter}
         </div>
       </div>
       <div
