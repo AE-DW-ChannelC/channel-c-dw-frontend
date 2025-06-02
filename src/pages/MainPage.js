@@ -11,6 +11,7 @@ import NO_IMAGE from "../assets/No_Image_Available.jpg";
 import { capitalizeFirstLetter, truncateString } from "../common/common";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import Swal from "sweetalert2";
+import { UserService } from "../services/user.service";
 
 function MainPage() {
   const navigate = useNavigate();
@@ -89,6 +90,42 @@ function MainPage() {
   const avatarStyle = { borderRadius: "50%", objectFit: "cover" };
   const giftStyle = { borderRadius: 10, objectFit: "cover" };
 
+  const handleQuestionPageLoading = async () => {
+    try {
+      setLoading(true);
+      const response = await UserService.subscriptionStatus(userData?.mobile);
+      if (response.code === 200) {
+        if (response.message === 'REGISTERED') {
+          navigate("/tc?btn=true");
+        }
+        if (response.message === 'REG_PENDING') {
+          Swal.fire({
+            icon: "warning",
+            title: "Oops...",
+            text: "Make sure you have subscribed to the service. If you have already subscribed, please wait for the confirmation."
+          }).then(() => {
+            navigate("/tc?btn=true");
+          });
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Please check your subscription status and try again later.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again later.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="container">
       <LoadingFullscreen loading={loading} />
@@ -134,7 +171,7 @@ function MainPage() {
           <button
             className={`main-button ${!campaign && "disabled"} w-100`}
             style={{ fontSize: "13px", padding: 16, borderColor: "#AA0077" }}
-            onClick={() => navigate("/tc?btn=true")}
+            onClick={handleQuestionPageLoading}
             disabled={!campaign}
           >
             දැන් ප්‍රශ්න වලට උත්තර සපයන්න
