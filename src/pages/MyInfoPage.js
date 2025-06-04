@@ -13,45 +13,58 @@ function MyInfoPage() {
   const [loading, setLoading] = useState(false);
 
   const handleUnsubscribe = async () => {
-    const isUserConfirmed = window.confirm("Are you sure you want to unsubscribe?");
-    if (isUserConfirmed) {
-      try {
+    try {
+      const result = await Swal.fire({
+        title: "Do you want to Unsubscribe?",
+        showDenyButton: true,
+        confirmButtonText: "Unsubscribe",
+      });
+
+      if (result.isConfirmed) {
         setLoading(true);
-        const response = await UserService.unsubscribe(userData?.mobile);
-        if (response.code === 100) {
-          TokenService.removeUser();
-          window.location.reload();
-        } else {
-          Swal.fire({
+        try {
+          const response = await UserService.unsubscribe(userData?.mobile);
+          if (response.code === 100) {
+            TokenService.removeUser();
+            window.location.reload();
+          } else {
+            await Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: response.message || "Something went wrong!",
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          await Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: response.message || "Something went wrong!",
+            text: "Something went wrong!",
           });
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Something went wrong!",
-        });
-
-      }finally{
-        setLoading(false);
       }
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   const handleLogout = () => {
-    const isUserConfirmed = window.confirm("Are you sure you want to logout?");
-    if (isUserConfirmed) {
-      TokenService.removeUser();
-      window.location.reload();
-    }
+    Swal.fire({
+      title: "Do you want to logout?",
+      showCancelButton: true,
+      confirmButtonText: "Logout", 
+    }).then((result) => {
+      if (result.isConfirmed) {
+        TokenService.removeUser();
+        window.location.reload();
+      }
+    });
   }
 
   return !isEdit ? (
-    
+
     <div className="container text-white text-center">
       <LoadingFullscreen loading={loading} />
       <div className="text-center pt-3 animate__animated animate__bounceIn">

@@ -18,7 +18,7 @@ const showErrorAlert = (message) =>
  * Login Component
  * Handles the mobile number input and navigates to OTP verification.
  */
-const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp }) => {
+const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, setUserDetail }) => {
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -39,11 +39,19 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp })
     try {
       setLoading(true);
       const response = await UserService.loginUser(mobile);
-      if (response.code !== 100) {
+      
+      if (response.code !== 100 && response.code !== 200) {
         showErrorAlert(response.message || "Something went wrong!");
         setLoading(false);
         return;
       }
+
+      if (response.code === 200) {
+        console.log("User already exists." + response.code);
+        setUserDetail(response.data);
+        window.location.reload();
+      }
+
       TokenService.setUser(response);
       setMobile(mobile);
       setTestOtp(response?.data?.latest_otp)
@@ -299,6 +307,7 @@ function LoginPage() {
           setMobile={setMobile}
           setLoading={setLoading}
           setTestOtp={setTestOtp}
+          setUserDetail={setUserDetail}
         />
       ) : componentPage === "otp" ? (
         <OTPComponent
