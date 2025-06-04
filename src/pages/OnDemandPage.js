@@ -26,7 +26,7 @@ function OnDemandPage() {
       
     } catch (error) {
       console.error(error);
-      showErrorAlert("Something went wrong! Please try again later.");
+      showErrorAlert("Insufficient balance or Something went wrong! Please try again later.");
     }
     
   }

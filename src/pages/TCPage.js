@@ -17,12 +17,16 @@ function TCPage({ menuBtn }) {
   );
 
   const handleStartQuiz = () => {
+    if (!userData?.leaderboard) {
+      navigate("/questions");
+      return
+    }
     if (freeQuestions) {
       navigate("/questions");
     } else {
       navigate("/on-demand");
     }
-  }
+  };
 
   return (
     <div className="container">
