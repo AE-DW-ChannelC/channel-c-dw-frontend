@@ -2,9 +2,34 @@ import React, { useState } from "react";
 import LOGO_MAIN from "../assets/logo_main.svg";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import { QuestionService } from "../services/question.service";
+import Swal from "sweetalert2";
+import TokenService from "../services/token.service";
 
 function OnDemandPage() {
   const navigate = useNavigate();
+  const userData = TokenService.getUserData();
+
+  // Utility function to show error alerts
+  const showErrorAlert = (message) =>
+    Swal.fire({ icon: "error", title: "Oops...", text: message });
+
+  const handleExtraQuestions = async () => {
+    try {
+      const response = await QuestionService.cashDebit(userData?.mobile);
+      console.log(response);
+      if (response.code === 200) {
+        navigate("/questions");
+      } else {
+        showErrorAlert("Check your credit balance and Please try again later.");
+      }
+      
+    } catch (error) {
+      console.error(error);
+      showErrorAlert("Something went wrong! Please try again later.");
+    }
+    
+  }
   return (
     <div className="container text-white text-center">
       <div className="text-center mt-4 animate__animated animate__bounceIn">
@@ -24,7 +49,7 @@ function OnDemandPage() {
         <button
           className="main-button"
           style={{ fontSize: "14px" }}
-          onClick={() => navigate("/questions")}
+          onClick={handleExtraQuestions}
         >
           ඉදිරියට යන්න <FaArrowRight />
         </button>

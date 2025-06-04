@@ -26,4 +26,14 @@ export const QuestionService = {
       throw error;
     }
   },
+    cashDebit: async (mobile) => { 
+    try {
+      const url = `/cash-debit/${mobile}`;
+      
+      const response = await axiosInstance.get(url);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
 };

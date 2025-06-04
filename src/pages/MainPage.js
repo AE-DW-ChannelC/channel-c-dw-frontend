@@ -11,6 +11,7 @@ import NO_IMAGE from "../assets/No_Image_Available.jpg";
 import { capitalizeFirstLetter, truncateString } from "../common/common";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import Swal from "sweetalert2";
+import { UserService } from "../services/user.service";
 
 function MainPage() {
   const navigate = useNavigate();
@@ -89,6 +90,42 @@ function MainPage() {
   const avatarStyle = { borderRadius: "50%", objectFit: "cover" };
   const giftStyle = { borderRadius: 10, objectFit: "cover" };
 
+  const handleQuestionPageLoading = async () => {
+    try {
+      setLoading(true);
+      const response = await UserService.subscriptionStatus(userData?.mobile);
+      if (response.code === 200) {
+        if (response.message === 'REGISTERED') {
+          navigate("/tc?btn=true");
+        }
+        if (response.message === 'REG_PENDING') {
+          Swal.fire({
+            icon: "warning",
+            title: "Oops...",
+            text: "Make sure you have subscribed to the service. If you have already subscribed, please wait for the confirmation."
+          }).then(() => {
+            navigate("/tc?btn=true");
+          });
+        }
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Please check your subscription status and try again later.",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again later.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="container">
       <LoadingFullscreen loading={loading} />
@@ -103,9 +140,9 @@ function MainPage() {
         <div className="dashboard-main mt-4 text-start">
           <div className="d-flex justify-content-between">
             <div>
-              <h4 className="fw-bold">සුභ දවසක්</h4>
+              <h4 className="fw-bold">👋 සුභ දවසක්</h4>
               <h5>{truncateString(userData?.full_name, 20)}</h5>
-              <p>දැනුමයි වාසනවායි තරඟයට ඔබ සාරෙන් පිලිගන්නවා...</p>
+              <p>දැනුමයි වාසනාවයි තරඟයට ඔබ සාදරයෙන් පිලිගන්නවා...</p>
               <p className="text-white">සුභ පැතුම්...!</p>
             </div>
             <div>
@@ -130,11 +167,11 @@ function MainPage() {
         </div>
 
         {/* Questions Button */}
-        <div className="text-center mt-4">
+        <div className="text-center mt-4 ">
           <button
-            className={`main-button ${!campaign && "disabled"}`}
+            className={`main-button ${!campaign && "disabled"} w-100`}
             style={{ fontSize: "13px", padding: 16, borderColor: "#AA0077" }}
-            onClick={() => navigate("/tc?btn=true")}
+            onClick={handleQuestionPageLoading}
             disabled={!campaign}
           >
             දැන් ප්‍රශ්න වලට උත්තර සපයන්න
@@ -142,10 +179,10 @@ function MainPage() {
         </div>
 
         {/* Previous Winners */}
-        <div className="text-white mt-4">
-          <h5 className="fw-bold">පසුගිය මාසයේ ජයග්‍රහකයෝ</h5>
+        <div className="mt-4">
+          <h5 className="fw-bold text-center" >පසුගිය මාසයේ ජයග්‍රහකයෝ</h5>
           <div
-            className="leaderboard-dash mt-3"
+            className="leaderboard-dash text-white mt-3"
             style={{ maxHeight: "400px", overflowY: "auto" }}
           >
             {prevWinners?.map((winner, index) => (
@@ -183,13 +220,14 @@ function MainPage() {
 
         {/* FAQ Button */}
         <div className="text-center mt-4">
-          <button
-            className="main-button"
-            style={{ fontSize: "13px", padding: 16 }}
+          <div
             onClick={() => navigate("/faq")}
+            className="text-center text-white mt-4 text-decoration-underline"
+            style={{ cursor: 'pointer' }}
           >
-            තරග විස්තර දැන ගැනීමට පිවිසෙන්න
-          </button>
+            තරඟ විස්තර දැන ගැනීමට පිවිසෙන්න
+          </div>
+
         </div>
 
         {/* Footer Text */}
@@ -201,11 +239,15 @@ function MainPage() {
           <span
             className="fw-bold text-decoration-underline"
             onClick={() => navigate("/tc")}
+            style={{ cursor: 'pointer' }}
           >
             Terms of Conditions
           </span>{" "}
           and{" "}
-          <span className="fw-bold text-decoration-underline">
+          <span
+            className="fw-bold text-decoration-underline"
+            style={{ cursor: 'pointer' }}
+          >
             Privacy of Policy
           </span>
         </div>

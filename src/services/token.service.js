@@ -73,6 +73,11 @@ const updateLeaderboardData = (leaderboardData) => {
   localStorage.setItem(store, JSON.stringify(data));
 }
 
+const isNewUser = () => {
+  let data = JSON.parse(localStorage.getItem(store));
+  return data.firstTimeLogin;
+}
+
 
 const TokenService = {
   getTokenDetails,
@@ -86,7 +91,8 @@ const TokenService = {
   updateCampaignData,
   getCampaignData,
   updateLeaderboardData,
-  updateProfilePic
+  updateProfilePic,
+  isNewUser
 };
 
 export default TokenService;

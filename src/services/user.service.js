@@ -46,4 +46,20 @@ export const UserService = {
       throw error;
     }
   },
+   unsubscribe: async (mobile) => { 
+    try {
+      const response = await axiosInstance.get("unsubscribe/" + mobile);
+      return response.data;
+    } catch (error) {
+      throw error;
+    } 
+  },
+  subscriptionStatus: async (mobile) => {
+    try {
+      const response = await axiosInstance.get("subscription/Status/" + mobile);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 };

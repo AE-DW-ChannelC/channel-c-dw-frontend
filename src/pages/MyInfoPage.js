@@ -10,8 +10,63 @@ import Swal from "sweetalert2";
 function MyInfoPage() {
   const [isEdit, setIsEdit] = useState(false);
   const userData = TokenService.getUserData();
+  const [loading, setLoading] = useState(false);
+
+  const handleUnsubscribe = async () => {
+    try {
+      const result = await Swal.fire({
+        title: "Do you want to Unsubscribe?",
+        showDenyButton: true,
+        confirmButtonText: "Unsubscribe",
+      });
+
+      if (result.isConfirmed) {
+        setLoading(true);
+        try {
+          const response = await UserService.unsubscribe(userData?.mobile);
+          if (response.code === 100) {
+            TokenService.removeUser();
+            window.location.reload();
+          } else {
+            await Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: response.message || "Something went wrong!",
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          await Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+          });
+        } finally {
+          setLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Do you want to logout?",
+      showCancelButton: true,
+      confirmButtonText: "Logout", 
+    }).then((result) => {
+      if (result.isConfirmed) {
+        TokenService.removeUser();
+        window.location.reload();
+      }
+    });
+  }
+
   return !isEdit ? (
+
     <div className="container text-white text-center">
+      <LoadingFullscreen loading={loading} />
       <div className="text-center pt-3 animate__animated animate__bounceIn">
         <h5 className="text-white fw-bold">මගේ විස්තර</h5>
       </div>
@@ -64,7 +119,7 @@ function MyInfoPage() {
               backgroundColor: "gray",
               borderColor: "#4B1B1B",
             }}
-            onClick={() => TokenService.removeUser()}
+            onClick={handleLogout}
           >
             Logout
           </button>
@@ -72,7 +127,7 @@ function MyInfoPage() {
         <div className="mt-4">
           <button
             className="main-button"
-            onClick={() => TokenService.removeUser()}
+            onClick={handleUnsubscribe}
             style={{
               fontSize: "13px",
               padding: 16,
@@ -163,11 +218,11 @@ const EditInfoPage = ({ setIsEdit }) => {
       setIsEdit(false);
     } catch (error) {
       console.log(error);
-         Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Something went wrong!",
-            });
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+      });
     } finally {
       setloading(false);
     }
@@ -231,7 +286,7 @@ const EditInfoPage = ({ setIsEdit }) => {
         }}
       >
         <div className="text-start">
-          <div>සම්පූර්ණ නම</div>
+          <div>නම</div>
           <input
             className="login-input mt-2"
             value={fullName}
