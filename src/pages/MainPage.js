@@ -102,7 +102,7 @@ function MainPage() {
           Swal.fire({
             icon: "warning",
             title: "Oops...",
-            text: "Make sure you have subscribed to the service. If you have already subscribed, please wait for the confirmation."
+            text: "Make sure you have sufficient balance in your account to continue."
           }).then(() => {
             navigate("/tc?btn=true");
           });
