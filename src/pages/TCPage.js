@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import TokenService from "../services/token.service";
 
 function TCPage({ menuBtn }) {
   const navigate = useNavigate();
@@ -7,6 +8,22 @@ function TCPage({ menuBtn }) {
   const queryParams = new URLSearchParams(location.search); // Parse the query string.
 
   const button = queryParams.get("btn"); // Get the value of the "btn" query parameter.
+
+  const userData = TokenService.getUserData();
+  const [freeQuestions, setFreeQuestions] = useState(
+    userData?.leaderboard?.answered_questions_by_date?.find(
+      (item) => item.date == new Date().toISOString().split("T")[0]
+    )?.answered_questions < 5
+  );
+
+  const handleStartQuiz = () => {
+    if (freeQuestions) {
+      navigate("/questions");
+    } else {
+      navigate("/on-demand");
+    }
+  }
+
   return (
     <div className="container">
       <div className="text-center pt-3 animate__animated animate__bounceIn">
@@ -26,7 +43,7 @@ function TCPage({ menuBtn }) {
             </li>
             <li className="mb-3">
               දෛනික ගාස්තුව ගෙවීමක් සිදු කිරීමට තරම් මුදල් නොමැතිවිමකදී ප්‍රමුක
-              පුවරුවට (කැරඉද්රා) ලකුණු එකතුවීමක් සිදුනොවේ.
+              පුවරුවට (Leaderboard) ලකුණු එකතුවීමක් සිදුනොවේ.
             </li>
             <li className="mb-3">
               ප්‍රශ්නාවලිය ආරමිභ වන විට සහ පශීලකයාගේ පිළිතුරු වාර්තා කරන විට
@@ -46,7 +63,7 @@ function TCPage({ menuBtn }) {
             <button
               className="main-button"
               style={{ fontSize: "13px", padding: 16 }}
-              onClick={() => navigate("/questions")}
+              onClick={handleStartQuiz}
             >
               දැන් ප්‍රශ්න වලට උත්තර දෙන්න
             </button>
