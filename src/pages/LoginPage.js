@@ -49,7 +49,9 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
       if (response.code === 200) {
         console.log("User already exists." + response.code);
         setUserDetail(response.data);
+        TokenService.setUser(response);
         window.location.reload();
+        return;
       }
 
       TokenService.setUser(response);
