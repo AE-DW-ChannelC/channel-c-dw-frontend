@@ -126,7 +126,8 @@ function MyPlacePage() {
           </div>
           <div className="leaderboard-self-profile-item d-flex justify-content-between px-2 mt-3">
             <div className="d-flex justify-content-start gap-3">
-              <h4 className="pt-3">5</h4>
+
+              <h4 className="pt-3">{heighestScorers ? heighestScorers.findIndex(entry => entry.user.id === userData.userid) + 1 : ''}</h4>
               <img
                 src={userData?.profile_pic?.url || NO_PIC}
                 height={55}

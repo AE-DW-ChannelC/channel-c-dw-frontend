@@ -350,7 +350,7 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
           className="main-button mt-4"
           style={{ padding: "10px", fontSize: "14px" }}
           onClick={() =>
-            freeQuestions ? setScreen("question") : navigate("/on-demand")
+            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true })
           }
         >
           ඊළඟ ප්‍රශ්නයට යන්න
@@ -399,7 +399,7 @@ const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
           className="main-button mt-4"
           style={{ padding: "10px", fontSize: "14px" }}
           onClick={() =>
-            freeQuestions ? setScreen("question") : navigate("/on-demand")
+            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true })
           }
         >
           ඊළඟ ප්‍රශ්නයට යන්න
@@ -459,7 +459,7 @@ const TimeoutScreen = ({ setScreen, freeQuestions }) => {
           className="main-button mt-4"
           style={{ padding: "10px", fontSize: "14px" }}
           onClick={() =>
-            freeQuestions ? setScreen("question") : navigate("/on-demand")
+            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true })
           }
         >
           ඊළඟ ප්‍රශ්නයට යන්න
