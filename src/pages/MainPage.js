@@ -91,29 +91,43 @@ function MainPage() {
   const giftStyle = { borderRadius: 10, objectFit: "cover" };
 
   const handleQuestionPageLoading = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await UserService.subscriptionStatus(userData?.mobile);
-      if (response.code === 200) {
-        if (response.message === 'REGISTERED') {
-          navigate("/tc?btn=true");
-        }
-        if (response.message === 'REG_PENDING') {
+
+      if (response.code === 200 && response.message === 'REGISTERED') {
+        navigate("/tc?btn=true");
+        return;
+      }
+
+      if (response.code === 102) {
+        const { subscriptionStatus } = response.data || {};
+        const statusMessages = {
+          REG_PENDING: "Make sure you have subscribed to the service or have sufficient balance. If you have already subscribed, please wait for the confirmation.",
+          TEMPORARY_BLOCKED: "You are temporarily blocked by the service provider, please try again later.",
+          UNREGISTERED: "You are unregistered. Please subscribe to the service to continue."
+        };
+
+        if (statusMessages[subscriptionStatus]) {
           Swal.fire({
             icon: "warning",
             title: "Oops...",
-            text: "Make sure you have subscribed to the service or sufficient balance. If you have already subscribed, please wait for the confirmation.",
-          }).then(() => {
-            navigate("/tc?btn=true");
+            text: statusMessages[subscriptionStatus],
           });
+          return;
         }
-      } else {
         Swal.fire({
-          icon: "error",
+          icon: "warning",
           title: "Oops...",
-          text: "Please check your subscription status and try again later.",
+          text: "Something went wrong with your subscription status. Please try again later.",
         });
+        return;
       }
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong! Please try again later.",
+      });
     } catch (error) {
       console.error(error);
       Swal.fire({
@@ -124,7 +138,8 @@ function MainPage() {
     } finally {
       setLoading(false);
     }
-  }
+  };
+
 
   return (
     <div className="container">
