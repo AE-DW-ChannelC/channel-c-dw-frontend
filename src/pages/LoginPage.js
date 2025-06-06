@@ -156,8 +156,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
   const [alertMessage, setAlertMessage] = useState("");
   const [otp, setOtp] = useState([]);
   const [isTimeOut, setIsTimeOut] = useState(false);
-  const [seconds, setSeconds] = useState(300
-  );
+  const [seconds, setSeconds] = useState(60);
   const [isNewUser, setIsNewUser] = useState(TokenService.isNewUser());
 
   const userData = TokenService.getUserData();
