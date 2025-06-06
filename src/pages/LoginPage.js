@@ -39,7 +39,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
     try {
       setLoading(true);
       const response = await UserService.loginUser(mobile);
-      
+
       if (response.code !== 100 && response.code !== 200) {
         showErrorAlert(response.message || "Something went wrong!");
         setLoading(false);
@@ -133,6 +133,7 @@ const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
         <h4 className="fw-bold">ඔබගේ නම ඇතුලත් කරන්න</h4>
         <input
           className="login-input mt-4"
+          inputMode="numeric"
           onChange={(e) => setFullName(e.target.value)}
           value={fullName}
         />
@@ -154,16 +155,18 @@ const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
 const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }) => {
   const inputRefs = useRef([]);
   const [alertMessage, setAlertMessage] = useState("");
-  const [otp, setOtp] = useState([]);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [seconds, setSeconds] = useState(60);
   const [isNewUser, setIsNewUser] = useState(TokenService.isNewUser());
+
+  const OTP_LENGTH = 6;
+  const [otp, setOtp] = useState(new Array(OTP_LENGTH).fill(''));
 
   const userData = TokenService.getUserData();
 
   const handleTimeOut = async () => {
     setIsTimeOut(true);
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < OTP_LENGTH; i++) {
       inputRefs.current[i].value = "";
     }
     inputRefs.current[0].focus();
@@ -208,22 +211,36 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
   const handleChange = (e, index) => {
     const value = e.target.value;
 
-    if (!/^\d*$/.test(value)) return;
+    if (!/^\d?$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value.slice(0, 1);
     setOtp(newOtp);
 
-    if (value && index < 5) {
+    if (value && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
     }
   };
 
-  const handleKeyDown = (e, index) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
-      inputRefs.current[index - 1].focus();
+    const handleKeyDown = (e, index) => {
+    if (e.key === 'Backspace') {
+      // If current input is empty, move focus to previous
+      if (!otp[index] && index > 0) {
+        inputRefs.current[index - 1].focus();
+      }
+
+      // Clear current input from state
+      const newOtp = [...otp];
+      newOtp[index] = '';
+      setOtp(newOtp);
     }
-  }
+
+    // Prevent typing non-numeric keys
+    if (!['Backspace', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key) && !/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   const getGreeting = () => {
     const hour = new Date().getHours();
 
@@ -251,13 +268,14 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
         </div>
         {/* <p className="fw-bold" style={{ color: "black" }}>Please use this test OTP : {TestOtp}</p> */}
         <div className="d-flex gap-2 mt-4">
-          {Array(6)
+          {Array(OTP_LENGTH)
             .fill("")
             .map((_, index) => (
               <input
                 key={index}
                 ref={(el) => (inputRefs.current[index] = el)}
-                className="login-input"
+                className="otp-input"
+                inputMode="numeric"
                 maxLength={1}
                 onChange={(e) => handleChange(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}

@@ -8,6 +8,7 @@ import { LeaderboardService } from "../services/leaderboard.service";
 import { capitalizeFirstLetter, truncateString } from "../common/common";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import Swal from "sweetalert2";
+import POINT_ICON from "../assets/point.svg";
 
 function MyPlacePage() {
   const userData = TokenService.getUserData();
@@ -79,9 +80,12 @@ function MyPlacePage() {
               <div className="crown animate__animated animate__bounceIn  animate__delay-2s">
                 👑
               </div>
-              <p className="winner-name animate__animated animate__bounceIn  animate__delay-2s">
+              <p className="winner-name animate__animated animate__bounceIn  animate__delay-2s mb-0">
                 {truncateString(heighestScorers[0]?.user?.full_name, 7) ||
                   "No User"}
+              </p>
+              <p className="winner-score animate__animated animate__bounceIn  animate__delay-2s">
+                {heighestScorers[0]?.score}
               </p>
             </div>
 
@@ -91,9 +95,12 @@ function MyPlacePage() {
                 alt="Winner 2"
                 className="profile-pic animate__animated animate__bounceIn animate__delay-1s"
               />
-              <p className="winner-name animate__animated animate__bounceIn animate__delay-1s">
+              <p className="winner-name animate__animated animate__bounceIn animate__delay-1s mb-0">
                 {truncateString(heighestScorers[1]?.user?.full_name, 7) ||
                   "No User"}
+              </p>
+              <p className="winner-score animate__animated animate__bounceIn  animate__delay-2s">
+                {heighestScorers[1]?.score}
               </p>
             </div>
 
@@ -101,11 +108,14 @@ function MyPlacePage() {
               <img
                 src={heighestScorers[2]?.user?.profile_pic?.url || NO_PIC}
                 alt="Winner 3"
-                className="profile-pic animate__animated animate__bounceIn"
+                className="profile-pic animate__animated animate__bounceIn animate__delay-1s"
               />
-              <p className="winner-name animate__animated animate__bounceIn">
+              <p className="winner-name animate__animated animate__bounceIn animate__delay-1s mb-0">
                 {truncateString(heighestScorers[2]?.user?.full_name, 7) ||
                   "No User"}
+              </p>
+              <p className="winner-score animate__animated animate__bounceIn  animate__delay-2s">
+                {heighestScorers[2]?.score}
               </p>
             </div>
           </div>
@@ -124,7 +134,7 @@ function MyPlacePage() {
               style={{ width: `${progress}%` }}
             ></div>
           </div>
-          <div className="leaderboard-self-profile-item d-flex justify-content-between px-2 mt-3">
+          <div className="leaderboard-self-profile-item d-flex justify-content-evenly px-2 mt-3">
             <div className="d-flex justify-content-start gap-3">
 
               <h4 className="pt-3">{heighestScorers ? heighestScorers.findIndex(entry => entry.user.id === userData.userid) + 1 : ''}</h4>
@@ -141,6 +151,12 @@ function MyPlacePage() {
               <div className="text-start">
                 <div className="fw-bold">{userData?.full_name}</div>
                 <div>{capitalizeFirstLetter(campaignData?.campaign_month)}</div>
+              </div>
+              <div className="text-start">
+                <div>
+                  <div className="fw-bold">Your score</div>
+                  {heighestScorers ? heighestScorers.find(entry => entry.user.id === userData.userid)?.score : ""}
+                </div>
               </div>
             </div>
             <div>

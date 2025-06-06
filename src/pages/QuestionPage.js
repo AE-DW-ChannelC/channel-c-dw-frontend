@@ -47,6 +47,17 @@ function QuestionPage() {
     screen == "question" && getQuestion();
   }, [screen]);
 
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const todayData = userData?.leaderboard?.answered_questions_by_date?.find(
+      (item) => item.date === today
+    );
+
+    setQuestionNumber(() => {
+      return todayData?.answered_questions ? todayData.answered_questions + 1 : 1;
+    });
+  }, [screen, userData]);
+
   const getQuestion = async () => {
     try {
       setLoading(true);
@@ -248,8 +259,7 @@ function QuestionPage() {
           <div className="mt-4">
             {answer_a && (
               <div
-                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                  selectedAnswer == "A" && "active"
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${selectedAnswer == "A" && "active"
                   }`}
                 onClick={() => setSelectedAnswer("A")}
               >
@@ -263,8 +273,7 @@ function QuestionPage() {
             )}
             {answer_b && (
               <div
-                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                  selectedAnswer == "B" && "active"
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${selectedAnswer == "B" && "active"
                   }`}
                 onClick={() => setSelectedAnswer("B")}
               >
@@ -278,8 +287,7 @@ function QuestionPage() {
             )}
             {answer_c && (
               <div
-                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                  selectedAnswer == "C" && "active"
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${selectedAnswer == "C" && "active"
                   }`}
                 onClick={() => setSelectedAnswer("C")}
               >
@@ -293,8 +301,7 @@ function QuestionPage() {
             )}
             {answer_d && (
               <div
-                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${
-                  selectedAnswer == "D" && "active"
+                className={`d-flex justify-content-start gap-3 answer-item mb-3 ${selectedAnswer == "D" && "active"
                   }`}
                 onClick={() => setSelectedAnswer("D")}
               >
@@ -331,6 +338,15 @@ function QuestionPage() {
 
 const SuccessScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <div className="container text-center text-white ">
       <div className="mt-5 fw-bold">අපේ ඔබේ උණුසුම් සුභ පැතුම්..!</div>
@@ -379,6 +395,15 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
 
 const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <div className="container text-center text-white">
       <div className="text-center d-flex justify-content-center mt-5">
@@ -439,6 +464,15 @@ const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
 
 const TimeoutScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
   return (
     <div className="container text-center text-white">
       <div className="text-center d-flex justify-content-center mt-5">
