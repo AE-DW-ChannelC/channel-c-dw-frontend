@@ -47,6 +47,17 @@ function QuestionPage() {
     screen == "question" && getQuestion();
   }, [screen]);
 
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    const todayData = userData?.leaderboard?.answered_questions_by_date?.find(
+      (item) => item.date === today
+    );
+
+    setQuestionNumber(() => {
+      return todayData?.answered_questions ? todayData.answered_questions + 1 : 1;
+    });
+  }, [screen, userData]);
+
   const getQuestion = async () => {
     try {
       setLoading(true);
@@ -461,7 +472,7 @@ const TimeoutScreen = ({ setScreen, freeQuestions }) => {
 
     return () => clearTimeout(timer);
   }, [navigate]);
-  
+
   return (
     <div className="container text-center text-white">
       <div className="text-center d-flex justify-content-center mt-5">
