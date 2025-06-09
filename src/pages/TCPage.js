@@ -10,11 +10,16 @@ function TCPage({ menuBtn }) {
   const button = queryParams.get("btn"); // Get the value of the "btn" query parameter.
 
   const userData = TokenService.getUserData();
-  const [freeQuestions, setFreeQuestions] = useState(
-    userData?.leaderboard?.answered_questions_by_date?.find(
-      (item) => item.date == new Date().toISOString().split("T")[0]
-    )?.answered_questions < 5
-  );
+  const today = new Date().toISOString().split("T")[0];
+
+  const [freeQuestions, setFreeQuestions] = useState(() => {
+    const answeredToday =
+      userData?.leaderboard?.answered_questions_by_date?.find(
+        (item) => item.date === today
+      )?.answered_questions ?? 0; // default to 0 if no record
+
+    return answeredToday < 5;
+  });
 
   const handleStartQuiz = () => {
     if (!userData?.leaderboard) {
@@ -25,6 +30,7 @@ function TCPage({ menuBtn }) {
       navigate("/questions");
     } else {
       navigate("/on-demand");
+      console.log("Free questions limit reached, redirecting to on-demand page.");
     }
   };
 
