@@ -126,7 +126,7 @@ function MainPage() {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "Something went wrong! Please try again later.",
+        text: response.message || "Something went wrong! Please try again later.",
       });
     } catch (error) {
       console.error(error);
