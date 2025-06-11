@@ -81,6 +81,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
           className="login-input mt-4"
           onChange={(e) => setLocalMobile(e.target.value)}
           value={mobile}
+          inputMode="numeric"
           placeholder="07xxxxxxxx"
         />
         <div className="validation-message mt-2">{alertMessage}</div>
@@ -133,7 +134,6 @@ const EnterInfoComponent = ({ setLoading, setComponentPage }) => {
         <h4 className="fw-bold">ඔබගේ නම ඇතුලත් කරන්න</h4>
         <input
           className="login-input mt-4"
-          inputMode="numeric"
           onChange={(e) => setFullName(e.target.value)}
           value={fullName}
         />
@@ -197,9 +197,13 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
     try {
       setLoading(true);
       const response = await UserService.verifyOtp(mobile, otpStr);
-      setUserDetail(response.data);
-      window.location.reload();
-
+      if (response.code === 100) {
+        setUserDetail(response.data);
+        window.location.reload();
+      } else {
+        setAlertMessage(response.message || "Something went wrong!");
+        return;
+      }
     } catch (error) {
       console.error(error);
       setAlertMessage("OTP අංකය වැරදියි. නැවත උත්සහ කරන්න");
@@ -222,7 +226,7 @@ const OTPComponent = ({ mobile, setUserDetail, setLoading, TestOtp, setTestOtp }
     }
   };
 
-    const handleKeyDown = (e, index) => {
+  const handleKeyDown = (e, index) => {
     if (e.key === 'Backspace') {
       // If current input is empty, move focus to previous
       if (!otp[index] && index > 0) {
