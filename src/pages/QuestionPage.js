@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { IoAlarmOutline, IoExitOutline, IoPlay, IoPause } from "react-icons/io5";
+import { IoAlarmOutline, IoExitOutline, IoVolumeMute, IoVolumeHigh } from "react-icons/io5";
 import Lottie from "react-lottie-player";
 import SUCCESS from "../assets/sucess - animation.json";
 import FAILED from "../assets/failed - animation.json";
@@ -29,8 +29,9 @@ function QuestionPage() {
   const [timer, setTimer] = useState(null);
 
   const [audioFile, setAudioFile] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
+  const isPlayingRef = useRef(false);
 
   const [counter, setCounter] = useState(0);
 
@@ -64,7 +65,7 @@ function QuestionPage() {
   const getQuestion = async () => {
     try {
       setLoading(true);
-      setIsPlaying(false);
+      setIsMuted(false);
       const response = await QuestionService.getQuestions(userData?.mobile);
       setAudioFile(response.question?.audio_file?.url || null);
       setQuestions(response.question.question);
@@ -154,35 +155,49 @@ function QuestionPage() {
     }
   };
 
-  const togglePlayPause = () => {
+  const toggleMuteUnmute = () => {
     if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-      } else {
-        audioRef.current.play().catch((error) => {
-          console.error("Playback failed:", error);
-        });
-      }
-      setIsPlaying(!isPlaying);
+      audioRef.current.muted = !audioRef.current.muted;
+      setIsMuted(audioRef.current.muted);
     }
   };
 
+  // Handle autoplay and cleanup
   useEffect(() => {
     if (audioFile && audioRef.current) {
+      // Pause and reset current audio if playing
+      if (isPlayingRef.current) {
+        audioRef.current.pause();
+        isPlayingRef.current = false;
+      }
+
       audioRef.current.src = audioFile;
-      setIsPlaying(false); // Reset to false initially
+      audioRef.current.muted = false; // Start unmuted
+      setIsMuted(false); // Reset button to "Mute"
+
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
+        isPlayingRef.current = true;
         playPromise
           .then(() => {
-            setIsPlaying(true); // Autoplay succeeded, set button to "Pause"
+            setIsMuted(false); // Autoplay succeeded, button shows "Mute"
+            isPlayingRef.current = true;
           })
           .catch((error) => {
             console.error("Autoplay failed:", error);
-            setIsPlaying(false); // Autoplay failed, keep button as "Play"
+            setIsMuted(true); // Autoplay failed, button shows "Unmute"
+            isPlayingRef.current = false;
           });
       }
     }
+
+    // Cleanup on unmount or audioFile change
+    return () => {
+      if (audioRef.current && isPlayingRef.current) {
+        audioRef.current.pause();
+        isPlayingRef.current = false;
+      }
+    };
   }, [audioFile]);
 
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -224,11 +239,11 @@ function QuestionPage() {
         )}
         {!freeQuestions && <div>Questions: {questionNumber}</div>}
         <div>
-          {isPlaying ? <IoPause
-            onClick={togglePlayPause}
+          {isMuted ? <IoVolumeMute
+            onClick={toggleMuteUnmute}
             className="play-button-style"
-          /> : <IoPlay
-            onClick={togglePlayPause}
+          /> : <IoVolumeHigh
+            onClick={toggleMuteUnmute}
             className="play-button-style"
           />}
 
