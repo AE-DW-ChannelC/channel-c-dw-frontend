@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { IoAlarmOutline, IoExitOutline } from "react-icons/io5";
+import React, { useEffect, useRef, useState } from "react";
+import { IoAlarmOutline, IoExitOutline, IoPlay, IoPause } from "react-icons/io5";
 import Lottie from "react-lottie-player";
 import SUCCESS from "../assets/sucess - animation.json";
 import FAILED from "../assets/failed - animation.json";
@@ -27,7 +27,10 @@ function QuestionPage() {
   const [answer_d, setAnswer_d] = useState("");
 
   const [timer, setTimer] = useState(null);
+
   const [audioFile, setAudioFile] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   const [counter, setCounter] = useState(0);
 
@@ -61,6 +64,7 @@ function QuestionPage() {
   const getQuestion = async () => {
     try {
       setLoading(true);
+      setIsPlaying(false);
       const response = await QuestionService.getQuestions(userData?.mobile);
       setAudioFile(response.question?.audio_file?.url || null);
       setQuestions(response.question.question);
@@ -150,6 +154,37 @@ function QuestionPage() {
     }
   };
 
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch((error) => {
+          console.error("Playback failed:", error);
+        });
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  useEffect(() => {
+    if (audioFile && audioRef.current) {
+      audioRef.current.src = audioFile;
+      setIsPlaying(false); // Reset to false initially
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true); // Autoplay succeeded, set button to "Pause"
+          })
+          .catch((error) => {
+            console.error("Autoplay failed:", error);
+            setIsPlaying(false); // Autoplay failed, keep button as "Play"
+          });
+      }
+    }
+  }, [audioFile]);
+
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
@@ -189,6 +224,14 @@ function QuestionPage() {
         )}
         {!freeQuestions && <div>Questions: {questionNumber}</div>}
         <div>
+          {isPlaying ? <IoPause
+            onClick={togglePlayPause}
+            className="play-button-style"
+          /> : <IoPlay
+            onClick={togglePlayPause}
+            className="play-button-style"
+          />}
+
           <IoExitOutline
             onClick={() => window.location.reload(false)}
             style={{
@@ -203,7 +246,7 @@ function QuestionPage() {
         </div>
       </div>
       <LoadingFullscreen loading={loading} />
-      {audioFile && <audio src={audioFile} autoPlay />}
+      {audioFile && <audio ref={audioRef} src={audioFile} autoPlay />}
       <div className="container">
         <div
           className="text-center text-white mt-4"
@@ -328,7 +371,7 @@ function QuestionPage() {
       </div>
     </>
   ) : screen == "success" ? (
-    <SuccessScreen setScreen={setScreen} freeQuestions={freeQuestions} />
+    <SuccessScreen setScreen={setScreen} freeQuestions={freeQuestions} counter={counter} />
   ) : screen == "failed" ? (
     <FailedScreen setScreen={setScreen} freeQuestions={freeQuestions} counter={counter} />
   ) : (
@@ -336,13 +379,13 @@ function QuestionPage() {
   );
 }
 
-const SuccessScreen = ({ setScreen, freeQuestions }) => {
+const SuccessScreen = ({ setScreen, freeQuestions, counter }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -372,6 +415,21 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
           ඊළඟ ප්‍රශ්නයට යන්න
         </button>
       </div>
+      <div className="text-center d-flex justify-content-center mt-4">
+        <div
+          style={{
+            fontSize: "15px",
+            backgroundColor: "#3bbc5f",
+            padding: "2px",
+            width: "100px",
+            borderRadius: "5px",
+            paddingInline: "16px",
+            fontWeight: "bold",
+          }}
+        >
+          <IoAlarmOutline /> {counter > 9 ? `00:${counter}` : "00:0" + counter}
+        </div>
+      </div>
 
       <div
         className="text-center text-white px-5 mt-4"
@@ -399,7 +457,7 @@ const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -468,7 +526,7 @@ const TimeoutScreen = ({ setScreen, freeQuestions }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -511,7 +569,7 @@ const TimeoutScreen = ({ setScreen, freeQuestions }) => {
             fontWeight: "bold",
           }}
         >
-          <IoAlarmOutline /> 00:12
+          <IoAlarmOutline /> 00:00
         </div>
       </div>
       <div

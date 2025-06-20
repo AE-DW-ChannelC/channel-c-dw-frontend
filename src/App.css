@@ -304,6 +304,17 @@
   z-index: 1;
 }
 
+.play-button-style {
+  font-size: 30px;
+  font-weight: bold;
+  color: #E25B5B;
+  background-color: #F5C8C8;
+  padding-inline: 4px;
+  border-radius: 25px;
+  margin-right: 10px;
+}
+
+
 
 @media (min-width: 1024px) {
   .winner-1 {
