@@ -33,7 +33,6 @@ function QuestionPage() {
   const audioRef = useRef(null);
   const isPlayingRef = useRef(false);
 
-  const [counter, setCounter] = useState(0);
 
   const [freeQuestions, setFreeQuestions] = useState(
     userData?.leaderboard?.answered_questions_by_date?.find(
@@ -306,7 +305,6 @@ function QuestionPage() {
               <span className="mt-1">
                 {timer && (
                   <CountdownTimer
-                    setCounter={setCounter}
                     initialSeconds={timer}
                     completed={verifyAnswer}
                   />
@@ -386,24 +384,17 @@ function QuestionPage() {
       </div>
     </>
   ) : screen == "success" ? (
-    <SuccessScreen setScreen={setScreen} freeQuestions={freeQuestions} counter={counter} />
+    <SuccessScreen setScreen={setScreen} freeQuestions={freeQuestions} />
   ) : screen == "failed" ? (
-    <FailedScreen setScreen={setScreen} freeQuestions={freeQuestions} counter={counter} />
+    <FailedScreen setScreen={setScreen} freeQuestions={freeQuestions} />
   ) : (
     <TimeoutScreen setScreen={setScreen} freeQuestions={freeQuestions} />
   );
 }
 
-const SuccessScreen = ({ setScreen, freeQuestions, counter }) => {
+const SuccessScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
 
   return (
     <div className="container text-center text-white ">
@@ -442,7 +433,15 @@ const SuccessScreen = ({ setScreen, freeQuestions, counter }) => {
             fontWeight: "bold",
           }}
         >
-          <IoAlarmOutline /> {counter > 9 ? `00:${counter}` : "00:0" + counter}
+          <IoAlarmOutline />{" "}
+          <span className="mt-1">
+            <CountdownTimer
+              initialSeconds={10}
+              completed={() => {
+                freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+              }}
+            />
+          </span>
         </div>
       </div>
 
@@ -466,16 +465,9 @@ const SuccessScreen = ({ setScreen, freeQuestions, counter }) => {
   );
 };
 
-const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
+const FailedScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
 
   return (
     <div className="container text-center text-white">
@@ -515,7 +507,15 @@ const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
             fontWeight: "bold",
           }}
         >
-          <IoAlarmOutline /> {counter > 9 ? `00:${counter}` : "00:0" + counter}
+          <IoAlarmOutline />{" "}
+          <span className="mt-1">
+            <CountdownTimer
+              initialSeconds={10}
+              completed={() => {
+                freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+              }}
+            />
+          </span>
         </div>
       </div>
       <div
@@ -538,13 +538,6 @@ const FailedScreen = ({ setScreen, freeQuestions, counter }) => {
 const TimeoutScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
 
   return (
     <div className="container text-center text-white">
@@ -584,7 +577,15 @@ const TimeoutScreen = ({ setScreen, freeQuestions }) => {
             fontWeight: "bold",
           }}
         >
-          <IoAlarmOutline /> 00:00
+          <IoAlarmOutline />{" "}
+          <span className="mt-1">
+            <CountdownTimer
+              initialSeconds={10}
+              completed={() => {
+                freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+              }}
+            />
+          </span>
         </div>
       </div>
       <div
