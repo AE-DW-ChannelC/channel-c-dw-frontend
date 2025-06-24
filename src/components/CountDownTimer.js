@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 
-const CountdownTimer = ({ initialSeconds, completed, setCounter }) => {
+const CountdownTimer = ({ initialSeconds, completed }) => {
   const [seconds, setSeconds] = useState(initialSeconds);
 
   // Format time as MM:SS
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
     const secs = totalSeconds % 60;
-    setCounter(totalSeconds);
     return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
       2,
       "0"
