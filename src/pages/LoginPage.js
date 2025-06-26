@@ -22,6 +22,8 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
+  const CHARGE_AMOUNT = process.env.SUBSCRIPTION_AMOUNT || 6 ;
+
   const phoneRegex = /^07[0-8]\d{7}$/;
 
   const validateMobile = () => {
@@ -87,6 +89,7 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
         <div className="validation-message mt-2">{alertMessage}</div>
       </div>
       <div className="text-center">
+        <p className="text-white">{`ලියාපදිංචි ගාස්තු : දිනකට රු.${CHARGE_AMOUNT}+ අදාළ බදු අයවේ.`}</p>
         <button className="main-button" onClick={login}>
           ඉදිරියට යන්න <FaArrowRight />
         </button>
