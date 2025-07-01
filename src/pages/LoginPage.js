@@ -22,7 +22,8 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
   const [mobile, setLocalMobile] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
-  const CHARGE_AMOUNT = process.env.SUBSCRIPTION_AMOUNT || 6 ;
+  const CHARGE_AMOUNT_PREPAID = process.env.CHARGE_AMOUNT_PREPAID || 6;
+  const CHARGE_AMOUNT_POSTPAID = process.env.CHARGE_AMOUNT_POSTPAID || 180;
 
   const phoneRegex = /^07[0-8]\d{7}$/;
 
@@ -88,9 +89,18 @@ const LoginComponent = ({ setComponentPage, setMobile, setLoading, setTestOtp, s
         />
         <div className="validation-message mt-2">{alertMessage}</div>
       </div>
-      <div className="text-center">
-        <p className="text-white">{`ලියාපදිංචි ගාස්තු : දිනකට රු.${CHARGE_AMOUNT}+ අදාළ බදු අයවේ.`}</p>
-        <button className="main-button" onClick={login}>
+      <div style={{
+        textAlign : "center",
+        color: "white",
+        fontSize: "small"
+      }}>
+       
+        <p className="mb-4">
+          ලියාපදිංචි ගාස්තු<br/>
+          {`පෙරගෙවුම් : දිනකට රු.${CHARGE_AMOUNT_PREPAID}+ අදාළ බදු අයවේ.`}<br />
+          {`පසුගෙවුම් : මසකට රු.${CHARGE_AMOUNT_POSTPAID}+ අදාළ බදු අයවේ.`}
+        </p>
+        <button className="main-button mb-4" onClick={login}>
           ඉදිරියට යන්න <FaArrowRight />
         </button>
       </div>
