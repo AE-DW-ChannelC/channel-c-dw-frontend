@@ -10,7 +10,8 @@ import CountdownTimer from "../components/CountDownTimer";
 import LoadingFullscreen from "../components/LoadingFullscreen";
 import { LeaderboardService } from "../services/leaderboard.service";
 import Swal from "sweetalert2";
-import AUDIO from "../assets/01.wav";
+import SUCCESS_AUDIO from "../assets/CORRECT_ANSWER_V1.wav";
+import FAILED_AUDIO from "../assets/WRONG_ANSWER_V1.wav";
 
 function QuestionPage() {
   const [screen, setScreen] = useState("question");
@@ -396,8 +397,11 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
 
 
+
+
   return (
     <div className="container text-center text-white ">
+      <audio src={SUCCESS_AUDIO} autoPlay id="success-audio" />
       <div className="mt-5 fw-bold">අපේ ඔබේ උණුසුම් සුභ පැතුම්..!</div>
       <div className="text-center d-flex justify-content-center">
         <Lottie
@@ -471,6 +475,7 @@ const FailedScreen = ({ setScreen, freeQuestions }) => {
 
   return (
     <div className="container text-center text-white">
+      <audio src={FAILED_AUDIO} autoPlay id="failed-audio" />
       <div className="text-center d-flex justify-content-center mt-5">
         <Lottie
           loop={false}
