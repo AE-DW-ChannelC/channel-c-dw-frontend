@@ -395,13 +395,43 @@ function QuestionPage() {
 
 const SuccessScreen = ({ setScreen, freeQuestions }) => {
   const navigate = useNavigate();
+  const audioRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
-
-
+ 
+  const toggleMute = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isMuted) {
+        audio.muted = false;
+        // If audio wasn't playing due to autoplay restrictions, try to play it
+        if (!isAudioPlaying) {
+          audio.play().then(() => {
+            setIsAudioPlaying(true);
+          }).catch((error) => {
+            console.log('Playback failed:', error);
+          });
+        }
+      } else {
+        audio.muted = true;
+      }
+      setIsMuted(!isMuted);
+    }
+  };
 
   return (
     <div className="container text-center text-white ">
-      <audio src={SUCCESS_AUDIO} autoPlay id="success-audio" />
+      <div className="d-flex justify-content-end mt-2">
+        {isMuted ? <IoVolumeMute
+            onClick={toggleMute}
+            className="play-button-style"
+          /> : <IoVolumeHigh
+            onClick={toggleMute}
+            className="play-button-style"
+          />}
+      </div>
+      <audio src={SUCCESS_AUDIO} ref={audioRef} autoPlay id="success-audio" />
       <div className="mt-5 fw-bold">අපේ ඔබේ උණුසුම් සුභ පැතුම්..!</div>
       <div className="text-center d-flex justify-content-center">
         <Lottie
@@ -418,9 +448,9 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
         <button
           className="main-button mt-4"
           style={{ padding: "10px", fontSize: "14px" }}
-          onClick={() =>
-            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true })
-          }
+          onClick={() => {
+            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+          }}
         >
           ඊළඟ ප්‍රශ්නයට යන්න
         </button>
@@ -470,12 +500,46 @@ const SuccessScreen = ({ setScreen, freeQuestions }) => {
 };
 
 const FailedScreen = ({ setScreen, freeQuestions }) => {
+
   const navigate = useNavigate();
+  const audioRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+
+ 
+  const toggleMute = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      if (isMuted) {
+        audio.muted = false;
+        // If audio wasn't playing due to autoplay restrictions, try to play it
+        if (!isAudioPlaying) {
+          audio.play().then(() => {
+            setIsAudioPlaying(true);
+          }).catch((error) => {
+            console.log('Playback failed:', error);
+          });
+        }
+      } else {
+        audio.muted = true;
+      }
+      setIsMuted(!isMuted);
+    }
+  };
 
 
   return (
     <div className="container text-center text-white">
-      <audio src={FAILED_AUDIO} autoPlay id="failed-audio" />
+      <div className="d-flex justify-content-end mt-2">
+        {isMuted ? <IoVolumeMute
+            onClick={toggleMute}
+            className="play-button-style"
+          /> : <IoVolumeHigh
+            onClick={toggleMute}
+            className="play-button-style"
+          />}
+      </div>
+      <audio src={FAILED_AUDIO} ref={audioRef} autoPlay id="failed-audio" />
       <div className="text-center d-flex justify-content-center mt-5">
         <Lottie
           loop={false}
@@ -493,9 +557,9 @@ const FailedScreen = ({ setScreen, freeQuestions }) => {
         <button
           className="main-button mt-4"
           style={{ padding: "10px", fontSize: "14px" }}
-          onClick={() =>
-            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true })
-          }
+          onClick={() => {
+            freeQuestions ? setScreen("question") : navigate("/on-demand", { replace: true });
+          }}
         >
           ඊළඟ ප්‍රශ්නයට යන්න
         </button>
